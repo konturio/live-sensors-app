@@ -1,16 +1,17 @@
 # live_sensors
 
-A new Flutter project.
+## Useful links
+- [I’m having Trouble Getting GPS Location in the Background](https://pmatatias.medium.com/im-having-trouble-getting-the-gps-location-in-the-background-flutter-70acf559f5f4)
 
-## Getting Started
+TLDR: 
+> After explore some plugin from pub.dev, currently the best solution is using [geolocator](https://pub.dev/packages/geolocator) (v8.2 above) + [workmanager](https://pub.dev/packages/workmanager) with additional setting from [Don’t kill my app!](https://dontkillmyapp.com/)
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+From comments:  
+```
+A: geolocator v9.0.2 now has the ability to stream and listen location even in the background, just need to do some settings in the LocationSettings property.  
+  
+B: But once we close the app before stop the stream, we cant close the notification.  
+  
+A: How about using didChangeAppLifecycleState to cancel the stream when apps is not in bacground anymore?
+```
+- Simple official library for read other sensors [sensors_plus](https://pub.dev/packages/sensors_plus)
