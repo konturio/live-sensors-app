@@ -1,16 +1,47 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'ask_permission.dart';
+import 'package:live_sensors/views/logger.dart';
+import 'package:live_sensors/views/query.dart';
+
+import 'sender.dart';
+import 'sensors.dart';
+import 'tracker.dart';
+import 'user.dart';
+import 'api_client.dart';
+import 'position.dart';
+import 'storage.dart';
+import 'queue.dart';
 import 'logger.dart';
 
+final Logger logger = Logger();
+final SnapshotsQueue queue = SnapshotsQueue();
+
 void main() {
-  runApp(const MyApp());
+  final ApiClient api = ApiClient();
+  final User user = User('test_user');
+
+  final Sender sender = Sender(
+    logger: logger,
+    api: api,
+    storage: Storage(),
+    queue: queue,
+  );
+  final Tracker tracker = Tracker(
+    user: user,
+    queue: queue,
+    logger: logger,
+    sensors: Sensors().stream,
+    position: GeoLocator(logger: logger).stream,
+  );
+
+  runApp(const LiveSensorsApp());
+  Future(() {
+    tracker.track();
+    sender.run();
+  });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LiveSensorsApp extends StatelessWidget {
+  const LiveSensorsApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,100 +51,26 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Live sensors'),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final Logger logger = Logger();
-  List<LogRecord> _records = <LogRecord>[];
-
-  StreamSubscription<Position>? _positionStreamSubscription;
-  StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
-
-  _HomePageState() {
-    logger.subscribe((records) {
-      setState(() {
-        _records = records;
-      });
-    });
-  }
-
-  bool _traking = false;
-  _initTrackPosition() async {
-    try {
-      logger.info('Requesting permissions');
-      Position position = await requestLocationPermission();
-      logger.info("Permission granted");
-      logger.info("Position changed: ${position.toString()}");
-      logger.info("Create position steam");
-      // TODO: listen position service status too
-      Stream<Position> positionStream = Geolocator.getPositionStream();
-      setState(() {
-        _traking = true;
-      });
-      _positionStreamSubscription = positionStream.handleError((error) {
-        setState(() {
-          _traking = false;
-          logger.error(error.toString());
-        });
-      }).listen((position) {
-        logger.info("Position changed: ${position.toString()}");
-      });
-    } catch (error) {
-      setState(() {
-        _traking = false;
-        logger.error(error.toString());
-      });
-    }
-  }
-
-  _toggleTrackPosition() {
-    if (_positionStreamSubscription == null) {
-      _initTrackPosition();
-    } else if (_traking) {
-      _positionStreamSubscription?.pause();
-      setState(() {
-        _traking = false;
-      });
-    } else {
-      _positionStreamSubscription?.resume();
-      setState(() {
-        _traking = true;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Live sensors'),
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.info)),
+                Tab(icon: Icon(Icons.dns)),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              LoggerView(logger: logger),
+              QueueView(queue: queue),
+            ],
+          ),
+        ),
       ),
-      body: ListView(
-          children: _records
-              .map((log) => Card(
-                      child: ListTile(
-                    title: Text(log.msg),
-                    subtitle: Text(log.time),
-                  )))
-              .toList()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleTrackPosition,
-        tooltip: 'Show position',
-        child:
-            _traking ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
