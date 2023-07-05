@@ -66,3 +66,81 @@ class _HomePageState extends State<HomePage> {
        );
   }
 ```   
+
+```
+## Architecture
+
+  ╭ SnapshotError
+  │  temporaryError
+  │  type: Network | Backend | Device | Unknown
+  │  message
+  ╰
+
+  ╭ Snapshot
+  │  SnapshotError
+  │  position
+  │  startDateTime
+  │  endDateTime
+  │  measurements
+  │  user
+  │  addMeasurement:
+  │  seal(Position):
+  │  attachError:
+  ╰
+
+  ╭ Tracker
+  │  Snapshot ──┬┬┬──┬──→ Sender.addToQueue
+  │  Sensors:   │││  │
+  │    Sensor_A ┘││  │
+  │    Sensor_B ─┘│  │
+  │    Sensor_N ──┘  │
+  │  GeoPosition ────┘ 
+  ╰
+
+  ╭ Sender
+  │  Queue
+  │  Storage
+  │   
+  │  init:
+  │    sendSnapshotsFromQueue()
+  │    sendSnapshotsFromStorage()
+  │
+  │  addToQueue:
+  │    Snapshot -> Queue.add
+  │
+  │  sendSnapshotsFromQueue:
+  │    while(true):
+  │      Queue.next
+  │         Api.send
+  │          then:
+  │            Queue.remove(Snapshot)
+  │          catch(e):
+  │            Snapshot.attachError(e)
+  │            Storage.save(Snapshot)
+  │            Queue.skip(Snapshot)
+  │
+  │  sendSnapshotsFromStorage:
+  │    while(true):
+  │      Storage.next
+  │         Api.send
+  │          then:
+  │            Storage.delete(Snapshot)
+  ╰
+
+  ╭ Queue
+  │  _queue
+  │  add:
+  │  remove:
+  │  skip:
+  │  persist:
+  │  next: 
+  ╰ 
+
+  ╭ Storage
+  │  save:
+  │  delete:
+  │  next: // Cycled over file, but on second cycle takes only snapshots with 
+  ╰ 
+
+
+  

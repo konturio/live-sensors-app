@@ -23,7 +23,7 @@ class Tracker {
     Snapshot snap = Snapshot.empty(user);
 
     sensors.listen((events) {
-      snap.measurements.add(events);
+      snap.add(events);
     });
 
     position.listen((event) {

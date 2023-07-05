@@ -42,6 +42,9 @@ dependencies:
   sqflite: ^2.2.8+4
   path: ^1.8.3
   uuid: ^3.0.7
+  http: ^1.1.0
+  fk_user_agent: ^2.1.0
+  nanoid: ^1.0.0
 
 dev_dependencies:
   flutter_test:

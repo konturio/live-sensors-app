@@ -10,11 +10,45 @@ class ParsingError extends Error {
   ParsingError(this.message);
 }
 
+class MeasurementsTable {
+  List<double> x;
+  List<double> y;
+  List<double> z;
+  List<DateTime> timestamp;
+
+  MeasurementsTable(this.x, this.y, this.z, this.timestamp);
+
+  factory MeasurementsTable.empty() {
+    return MeasurementsTable([], [], [], []);
+  }
+
+  factory MeasurementsTable.fromJson(Map<String, dynamic> json) {
+    return MeasurementsTable(
+        json['x'], json['y'], json['z'], json['timestamp']);
+  }
+
+  add(double x, double y, double z, DateTime timestamp) {
+    this.x.add(x);
+    this.y.add(y);
+    this.z.add(z);
+    this.timestamp.add(timestamp);
+  }
+
+  Map<String, dynamic> toJson() => {
+        'x': x,
+        'y': y,
+        'z': z,
+        'timestamp': timestamp,
+      };
+}
+
 class Snapshot {
   final String id;
   final User user;
   final DateTime startDateTime;
-  final List<Measurement> measurements = <Measurement>[];
+  final MeasurementsTable accelerometer;
+  final MeasurementsTable gyroscope;
+  final MeasurementsTable magnetometer;
   SnapshotError? error;
   late DateTime? endDateTime;
   late Position? position;
@@ -23,6 +57,9 @@ class Snapshot {
     required this.user,
     required this.id,
     required this.startDateTime,
+    required this.accelerometer,
+    required this.gyroscope,
+    required this.magnetometer,
     this.endDateTime,
     this.error,
     this.position,
@@ -30,15 +67,23 @@ class Snapshot {
 
   factory Snapshot.empty(User u) {
     return Snapshot(
-      user: u,
-      id: Uuid().v4(),
-      startDateTime: DateTime.now(),
-    );
+        user: u,
+        id: Uuid().v4(),
+        startDateTime: DateTime.now(),
+        accelerometer: MeasurementsTable.empty(),
+        gyroscope: MeasurementsTable.empty(),
+        magnetometer: MeasurementsTable.empty());
   }
 
   seal(Position pos) {
     position = pos;
     endDateTime = DateTime.now();
+  }
+
+  add(Measurement m) {
+    accelerometer.add(m.$1.data.x, m.$1.data.y, m.$1.data.z, m.$1.timestamp);
+    gyroscope.add(m.$2.data.x, m.$2.data.y, m.$2.data.z, m.$2.timestamp);
+    magnetometer.add(m.$3.data.x, m.$3.data.y, m.$3.data.z, m.$3.timestamp);
   }
 
   factory Snapshot.fromJson(Map<String, dynamic> json) {
@@ -53,15 +98,10 @@ class Snapshot {
       user: u,
       id: Uuid().v4(),
       startDateTime: created,
+      accelerometer: MeasurementsTable.fromJson(json['accelerometer']),
+      gyroscope: MeasurementsTable.fromJson(json['gyroscope']),
+      magnetometer: MeasurementsTable.fromJson(json['magnetometer']),
     );
-
-    if (json['measurements'] != null) {
-      for (String m in json['measurements'] as List<String>) {
-        throw Error(); // TODO: Not implemented yet
-        // Measurement measurement = m;
-        // snap.measurements.add(measurement);
-      }
-    }
 
     if (json['error'] != null) {
       snap.error = SnapshotError.fromMap(json['error']);
@@ -83,7 +123,9 @@ class Snapshot {
         'endDateTime': endDateTime,
         'position': position?.toJson(),
         'user': user.id,
-        'measurements': measurements, // TODO - implement serialization
+        'accelerometer': accelerometer.toJson(),
+        'gyroscope': gyroscope.toJson(),
+        'magnetometer': magnetometer.toJson(),
         'error': error?.toJson(),
       };
 }

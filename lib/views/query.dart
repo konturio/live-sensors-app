@@ -37,7 +37,7 @@ class _QueueViewState extends State<QueueView> {
           .map(
             (snap) => Card(
               child: ListTile(
-                title: Text(snap.id),
+                title: Text(snap.position?.toString() ?? 'No position'),
                 subtitle: Text(snap.id),
               ),
             ),
