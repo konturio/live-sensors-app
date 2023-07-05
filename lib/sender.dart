@@ -1,3 +1,5 @@
+import 'package:live_sensors/snapnshot_error.dart';
+
 import 'queue.dart';
 import 'snapshot.dart';
 import 'storage.dart';
@@ -33,14 +35,17 @@ class Sender {
           queue.remove(nextSnap);
         } catch (error) {
           logger.error('Fail to send snapshot ${nextSnap.id}');
-          // TODO: set error
-          // nextSnap.error
+          nextSnap.error =
+              error is SnapshotError ? error : SnapshotError.unknown('unknown');
           try {
-            logger.info('Saving snapshot in persist storage: ${nextSnap.id}');
+            logger.info(
+              'Saving snapshot in persist storage: ${nextSnap.id}',
+            );
             await storage.save(nextSnap);
           } catch (e) {
             logger.error(
-                'Saving snapshot in persist storage error: ${nextSnap.id}');
+              'Saving snapshot in persist storage error: ${nextSnap.id}',
+            );
           }
         }
       } on StateError {

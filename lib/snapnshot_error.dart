@@ -1,4 +1,4 @@
-enum SnapshotErrorType { network, backend, data }
+enum SnapshotErrorType { network, backend, data, unknown }
 
 class SnapshotError {
   final String message;
@@ -18,6 +18,11 @@ class SnapshotError {
 
   SnapshotError.data(this.message) {
     type = SnapshotErrorType.data;
+    temporary = false;
+  }
+
+  SnapshotError.unknown(this.message) {
+    type = SnapshotErrorType.unknown;
     temporary = false;
   }
 
