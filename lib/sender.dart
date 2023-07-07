@@ -30,8 +30,9 @@ class Sender {
       try {
         Snapshot nextSnap = queue.next();
         try {
-          logger.info('Sending snapshot: ${nextSnap.toString()}');
-          await api.sendSnapshot(snapshotToGeoJson(nextSnap).toJson());
+          final json = snapshotToGeoJson(nextSnap).toJson();
+          logger.info('Sending snapshot: ${json}');
+          await api.sendSnapshot(json);
           logger.info('Snapshot sended: ${nextSnap.id}');
           queue.remove(nextSnap);
         } catch (error) {
@@ -42,7 +43,7 @@ class Sender {
             logger.info(
               'Saving snapshot in persist storage: ${nextSnap.id}',
             );
-            await storage.save(nextSnap);
+            // await storage.save(nextSnap);
           } catch (e) {
             logger.error(
               'Saving snapshot in persist storage error: ${nextSnap.id}',

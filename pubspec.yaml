@@ -45,6 +45,8 @@ dependencies:
   http: ^1.1.0
   fk_user_agent: ^2.1.0
   nanoid: ^1.0.0
+  flutter_secure_storage: ^8.0.0
+  jwt_decoder: ^2.0.1
 
 dev_dependencies:
   flutter_test:

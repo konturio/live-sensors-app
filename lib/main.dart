@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_sensors/auth_service.dart';
 import 'package:live_sensors/views/logger.dart';
 import 'package:live_sensors/views/query.dart';
 
@@ -15,9 +16,18 @@ import 'logger.dart';
 final Logger logger = Logger();
 final SnapshotsQueue queue = SnapshotsQueue();
 
-void main() {
-  final ApiClient api = ApiClient();
-  final User user = User('test_user');
+void main() async {
+  final auth = AuthService();
+  const email = String.fromEnvironment('email');
+  const password = String.fromEnvironment('password');
+  if (email.length == 0 || password.length == 0) {
+    throw Exception("Setup .env first");
+  }
+  User user = await auth.login(
+    email: email,
+    password: password,
+  );
+  final ApiClient api = ApiClient(user);
 
   final Sender sender = Sender(
     logger: logger,

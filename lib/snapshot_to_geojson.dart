@@ -27,7 +27,7 @@ precise(double val) {
 }
 
 preciseAll(List<double> list) {
-  return list.map((v) => v.toStringAsPrecision(precision));
+  return list.map((v) => v.toStringAsPrecision(precision)).toList();
 }
 
 const precision = 3;
@@ -49,22 +49,23 @@ FeatureCollection snapshotToGeoJson(Snapshot snapshot) {
       'heading': precise(position.heading),
       'coordTimestamp': position.timestamp?.millisecondsSinceEpoch,
       'coordSystTimestamp': position.timestamp?.millisecondsSinceEpoch,
-      'userAgent': FkUserAgent.userAgent,
+      // TODO - investigate why it's throw exception
+      // 'userAgent': FkUserAgent.userAgent,
       'orientX': preciseAll(snapshot.magnetometer.x),
       'orientY': preciseAll(snapshot.magnetometer.y),
       'orientZ': preciseAll(snapshot.magnetometer.z),
       'orientTime':
-          snapshot.magnetometer.timestamp.map((t) => t.millisecondsSinceEpoch),
+          snapshot.magnetometer.timestamp.map((t) => t.millisecondsSinceEpoch).toList(),
       'accelX': preciseAll(snapshot.accelerometer.x),
       'accelY': preciseAll(snapshot.accelerometer.y),
       'accelZ': preciseAll(snapshot.accelerometer.z),
       'accelTime':
-          snapshot.accelerometer.timestamp.map((t) => t.millisecondsSinceEpoch),
+          snapshot.accelerometer.timestamp.map((t) => t.millisecondsSinceEpoch).toList(),
       'gyroX': preciseAll(snapshot.gyroscope.x),
       'gyroY': preciseAll(snapshot.gyroscope.y),
       'gyroZ': preciseAll(snapshot.gyroscope.z),
       'gyroTime':
-          snapshot.gyroscope.timestamp.map((t) => t.millisecondsSinceEpoch),
+          snapshot.gyroscope.timestamp.map((t) => t.millisecondsSinceEpoch).toList(),
     },
   );
 
