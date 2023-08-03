@@ -1,7 +1,57 @@
-# live_sensors
+# Live Sensors App
+
+Development
+----
+For run application in dev mode
+```
+flutter run --dart-define-from-fil=.env.json
+```
+
+If you not have .env.json file create one be example (.env.example.json)
+
+In case you are use VSCode for development, there recommended launch.json config:
+```
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "live_sensors",
+      "request": "launch",
+      "type": "dart",
+      "toolArgs": ["--dart-define-from-file", ".env.json"]
+    },
+    {
+      "name": "live_sensors (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "toolArgs": ["--dart-define-from-file", ".env.json"]
+    },
+    {
+      "name": "live_sensors (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "toolArgs": ["--dart-define-from-file", ".env.json"]
+    }
+  ]
+}
+
+```
+
+Build
+----
+```
+flutter build apk --dart-define-from-file=.env.json
+```
+
+
 
 ## Useful links
--[Remote debugging on real device](https://dev.to/petrussola/how-to-debug-flutter-app-with-real-android-phone-693)
+- [Remote debugging on real device](https://dev.to/petrussola/how-to-debug-flutter-app-with-real-android-phone-693)
 
 
 - [I’m having Trouble Getting GPS Location in the Background](https://pmatatias.medium.com/im-having-trouble-getting-the-gps-location-in-the-background-flutter-70acf559f5f4)
