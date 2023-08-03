@@ -1,5 +1,4 @@
 import 'package:live_sensors/snapnshot_error.dart';
-
 import 'queue.dart';
 import 'snapshot.dart';
 import 'snapshot_to_geojson.dart';
@@ -31,7 +30,7 @@ class Sender {
         Snapshot nextSnap = queue.next();
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
-          logger.info('Sending snapshot: ${json}');
+          logger.info('Sending snapshot: $json');
           await api.sendSnapshot(json);
           logger.info('Snapshot sended: ${nextSnap.id}');
           queue.remove(nextSnap);

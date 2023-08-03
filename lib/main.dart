@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:live_sensors/auth_service.dart';
 import 'package:live_sensors/views/logger.dart';
 import 'package:live_sensors/views/query.dart';
@@ -20,7 +21,10 @@ void main() async {
   final auth = AuthService();
   const email = String.fromEnvironment('email');
   const password = String.fromEnvironment('password');
-  if (email.length == 0 || password.length == 0) {
+  runApp(const LiveSensorsApp());
+  await FkUserAgent.init();
+
+  if (email.isEmpty || password.isEmpty) {
     throw Exception("Setup .env first");
   }
   User user = await auth.login(
@@ -37,13 +41,14 @@ void main() async {
   );
   final Tracker tracker = Tracker(
     user: user,
+    userAgent: FkUserAgent.userAgent!,
     queue: queue,
     logger: logger,
     sensors: Sensors().stream,
     position: GeoLocator(logger: logger).stream,
   );
 
-  runApp(const LiveSensorsApp());
+
   Future(() {
     tracker.track();
     sender.run();

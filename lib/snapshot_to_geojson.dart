@@ -1,7 +1,7 @@
 // https://github.com/konturio/disaster-ninja-fe/blob/bc3e362525ac939b8513ac4bcc9f80dc5df965dd/src/features/live_sensor/toSnapshotFormat.ts
 
 import 'package:turf/turf.dart';
-import 'package:fk_user_agent/fk_user_agent.dart';
+// import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:geolocator/geolocator.dart' as locator;
 import 'package:nanoid/nanoid.dart';
 import './snapshot.dart';
@@ -49,8 +49,7 @@ FeatureCollection snapshotToGeoJson(Snapshot snapshot) {
       'heading': precise(position.heading),
       'coordTimestamp': position.timestamp?.millisecondsSinceEpoch,
       'coordSystTimestamp': position.timestamp?.millisecondsSinceEpoch,
-      // TODO - investigate why it's throw exception
-      // 'userAgent': FkUserAgent.userAgent,
+      'userAgent': snapshot.userAgent,
       'orientX': preciseAll(snapshot.magnetometer.x),
       'orientY': preciseAll(snapshot.magnetometer.y),
       'orientZ': preciseAll(snapshot.magnetometer.z),

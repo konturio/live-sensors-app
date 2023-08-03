@@ -18,7 +18,7 @@ class MeasurementsTable {
 
   MeasurementsTable(this.x, this.y, this.z, this.timestamp);
 
-  factory MeasurementsTable.empty() {
+  factory MeasurementsTable.init() {
     return MeasurementsTable([], [], [], []);
   }
 
@@ -49,6 +49,8 @@ class Snapshot {
   final MeasurementsTable accelerometer;
   final MeasurementsTable gyroscope;
   final MeasurementsTable magnetometer;
+  final String userAgent;
+
   SnapshotError? error;
   late DateTime? endDateTime;
   late Position? position;
@@ -60,19 +62,22 @@ class Snapshot {
     required this.accelerometer,
     required this.gyroscope,
     required this.magnetometer,
+    required this.userAgent,
     this.endDateTime,
     this.error,
     this.position,
   });
 
-  factory Snapshot.empty(User u) {
+  factory Snapshot.init(User usr, String usrA) {
     return Snapshot(
-        user: u,
-        id: Uuid().v4(),
-        startDateTime: DateTime.now(),
-        accelerometer: MeasurementsTable.empty(),
-        gyroscope: MeasurementsTable.empty(),
-        magnetometer: MeasurementsTable.empty());
+      user: usr,
+      userAgent: usrA,
+      id: const Uuid().v4(),
+      startDateTime: DateTime.now(),
+      accelerometer: MeasurementsTable.init(),
+      gyroscope: MeasurementsTable.init(),
+      magnetometer: MeasurementsTable.init(),
+    );
   }
 
   seal(Position pos) {
@@ -87,17 +92,19 @@ class Snapshot {
   }
 
   factory Snapshot.fromJson(Map<String, dynamic> json) {
-    User? u = json['user'];
-    DateTime? created = json['startDateTime'];
+    User? usr = json['user'];
+    DateTime? startDateTime = json['startDateTime'];
+    String userAgent = json['userAgent'] ?? 'Unknown';
 
-    if (u == null || created == null) {
+    if (usr == null || startDateTime == null) {
       throw ParsingError('Required properties missing');
     }
 
     Snapshot snap = Snapshot(
-      user: u,
-      id: Uuid().v4(),
-      startDateTime: created,
+      user: usr,
+      id: const Uuid().v4(),
+      startDateTime: startDateTime,
+      userAgent: userAgent,
       accelerometer: MeasurementsTable.fromJson(json['accelerometer']),
       gyroscope: MeasurementsTable.fromJson(json['gyroscope']),
       magnetometer: MeasurementsTable.fromJson(json['magnetometer']),
@@ -123,6 +130,7 @@ class Snapshot {
         'endDateTime': endDateTime,
         'position': position?.toJson(),
         'user': user.id,
+        'userAgent': userAgent,
         'accelerometer': accelerometer.toJson(),
         'gyroscope': gyroscope.toJson(),
         'magnetometer': magnetometer.toJson(),

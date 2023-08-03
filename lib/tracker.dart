@@ -8,11 +8,13 @@ class Tracker {
   final SnapshotsQueue queue;
   final Logger logger;
   final User user;
+  final String userAgent;
   final Stream<SensorsData> sensors;
   final Stream position;
 
   Tracker({
     required this.user,
+    required this.userAgent,
     required this.queue,
     required this.logger,
     required this.sensors,
@@ -20,7 +22,7 @@ class Tracker {
   });
 
   Future<void> track() async {
-    Snapshot snap = Snapshot.empty(user);
+    Snapshot snap = Snapshot.init(user, userAgent);
 
     sensors.listen((events) {
       snap.add(events);
@@ -29,7 +31,7 @@ class Tracker {
     position.listen((event) {
       snap.seal(event);
       queue.add(snap);
-      snap = Snapshot.empty(user);
+      snap = Snapshot.init(user, userAgent);
     });
   }
 }
