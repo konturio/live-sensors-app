@@ -114,7 +114,7 @@ class AuthService {
     keepTokenFresh = true;
     while (keepTokenFresh) {
       // TODO - read duration from token
-      await Future.delayed(Duration(minutes: 3));
+      await Future.delayed(const Duration(minutes: 3));
       refreshToken(user);
     }
   }

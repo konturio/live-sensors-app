@@ -20,7 +20,7 @@ String humanReadableTimeStamp(DateTime date) {
 class LogRecord {
   LogType type;
   String msg;
-  DateTime _timestamp = DateTime.now();
+  final DateTime _timestamp = DateTime.now();
   LogRecord(this.type, this.msg);
 
   get typeName {
