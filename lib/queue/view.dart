@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:live_sensors/queue.dart';
-import 'package:live_sensors/snapshot.dart';
+import 'package:live_sensors/queue/queue.dart';
+import 'package:live_sensors/snapshot/snapshot.dart';
 
 class QueueView extends StatefulWidget {
   final SnapshotsQueue queue;

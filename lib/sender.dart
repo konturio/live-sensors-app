@@ -1,12 +1,10 @@
-import 'package:live_sensors/snapnshot_error.dart';
-import 'queue.dart';
-import 'snapshot.dart';
-import 'snapshot_to_geojson.dart';
-import 'storage.dart';
-import 'api_client.dart';
-import 'logger.dart';
-
-
+import 'package:live_sensors/logger/logger.dart';
+import 'snapshot/snapnshot_error.dart';
+import 'snapshot/snapshot.dart';
+import 'snapshot/snapshot_to_geojson.dart';
+import 'queue/queue.dart';
+import 'storage/storage.dart';
+import 'api/api_client.dart';
 
 class Sender {
   final Logger logger = Logger();

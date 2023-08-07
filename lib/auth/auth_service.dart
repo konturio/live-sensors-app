@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:live_sensors/logger.dart';
-import 'package:live_sensors/user.dart';
+import 'package:live_sensors/logger/logger.dart';
+import 'package:live_sensors/user/user.dart';
 import 'package:flutter/widgets.dart';
 
 import 'auth_service_error.dart';

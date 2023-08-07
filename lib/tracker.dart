@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:live_sensors/logger.dart';
+import 'package:live_sensors/logger/logger.dart';
 
-import 'sensors.dart';
-import 'snapshot.dart';
-import 'queue.dart';
-import 'user.dart';
+import 'sensors/sensors.dart';
+import 'snapshot/snapshot.dart';
+import 'queue/queue.dart';
+import 'user/user.dart';
 
 class Tracker {
   final Logger logger = Logger();

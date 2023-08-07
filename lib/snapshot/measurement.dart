@@ -1,5 +1,5 @@
 import 'package:sensors_plus/sensors_plus.dart';
-import 'sensors.dart';
+import '../sensors/sensors.dart';
 
 typedef Measurement = (
   SensorEvent<UserAccelerometerEvent>,

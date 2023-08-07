@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:live_sensors/logger.dart';
+import 'package:live_sensors/logger/logger.dart';
 
 class LoggerView extends StatefulWidget {
-  final Logger logger;
-  const LoggerView({super.key, required this.logger});
+  final Logger logger = Logger();
+  LoggerView({super.key});
 
   @override
   State<LoggerView> createState() => _LoggerViewState();

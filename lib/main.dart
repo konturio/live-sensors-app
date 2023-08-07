@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
-import 'package:live_sensors/auth_service.dart';
-import 'package:live_sensors/logger.dart';
+import 'package:live_sensors/logger/view.dart';
 import 'package:live_sensors/utils.dart';
-import 'package:live_sensors/views/logger.dart';
-import 'package:live_sensors/views/query.dart';
+
+import 'auth/auth_service.dart';
+import 'sensors/sensors.dart';
+import 'user/user.dart';
+import 'api/api_client.dart';
+import 'geo_locator/position.dart';
+import 'queue/queue.dart';
+import 'queue/view.dart';
+import 'storage/storage.dart';
 
 import 'config.dart';
 import 'sender.dart';
-import 'sensors.dart';
 import 'tracker.dart';
-import 'user.dart';
-import 'api_client.dart';
-import 'position.dart';
-import 'storage.dart';
-import 'queue.dart';
-import 'views/toggle_tracking_btn.dart';
 
+import 'pages/toggle_tracking_btn.dart';
 
 class AppControllerState {
   bool isTracking = false;
@@ -112,8 +112,6 @@ class LiveSensorsApp extends StatelessWidget {
   final AppController controller;
   const LiveSensorsApp({super.key, required this.controller});
 
-  toggleTrackerState() {}
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -136,7 +134,7 @@ class LiveSensorsApp extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              LoggerView(logger: Logger()),
+              LoggerView(),
               QueueView(queue: controller.queue),
             ],
           ),

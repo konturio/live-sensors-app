@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:geolocator_android/geolocator_android.dart';
-import 'logger.dart';
+import '../logger/logger.dart';
 import 'package:flutter/foundation.dart';
 
 Future<Position> requestLocationPermission() async {

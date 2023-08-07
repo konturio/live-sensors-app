@@ -1,5 +1,5 @@
-import 'package:live_sensors/snapshot.dart';
-import 'package:live_sensors/logger.dart';
+import 'package:live_sensors/logger/logger.dart';
+import 'package:live_sensors/snapshot/snapshot.dart';
 import 'package:live_sensors/utils.dart';
 
 class SnapshotsQueue extends SimpleState<Set<Snapshot>> {
