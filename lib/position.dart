@@ -46,13 +46,13 @@ class GeoLocatorError extends Error {
 }
 
 class GeoLocator {
-  final Logger logger;
+  final Logger logger = Logger();
   late StreamController<Position> _streamController;
   late Stream<Position> stream;
   StreamSubscription<Position>? _positionStreamSubscription;
   StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
 
-  GeoLocator({required this.logger}) {
+  GeoLocator() {
     _streamController =
         StreamController<Position>(onListen: _initTrackPosition);
     stream = _streamController.stream;

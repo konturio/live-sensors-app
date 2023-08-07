@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:live_sensors/logger.dart';
 import 'package:live_sensors/user.dart';
 import 'package:flutter/widgets.dart';
 
@@ -13,6 +14,10 @@ class SecureStorageService {
 }
 
 class AuthService {
+  final Logger logger = Logger();
+
+  AuthService();
+
   static const String loginPath =
       'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token';
   static const String refreshPath =

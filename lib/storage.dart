@@ -3,7 +3,11 @@ import 'package:live_sensors/snapshot.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'logger.dart';
+
 class Storage {
+  final Logger logger = Logger();
+  Storage();
   final dbName = 'snapshots.db';
   late Future<Database> database;
 
@@ -51,9 +55,7 @@ class Storage {
     throw Error();
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('snapshots', 
-      where: 'error = ?'
-    );
-    
+    final List<Map<String, dynamic>> maps =
+        await db.query('snapshots', where: 'error = ?');
   }
 }

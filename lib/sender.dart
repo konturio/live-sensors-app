@@ -6,18 +6,25 @@ import 'storage.dart';
 import 'api_client.dart';
 import 'logger.dart';
 
-class Sender {
-  final SnapshotsQueue queue;
-  final ApiClient api;
-  final Storage storage;
-  final Logger logger;
 
-  Sender({
-    required this.api,
-    required this.queue,
-    required this.storage,
-    required this.logger,
-  });
+
+class Sender {
+  final Logger logger = Logger();
+  late SnapshotsQueue queue;
+  late ApiClient api;
+  late Storage storage;
+
+  Sender();
+
+  setup({
+    required api,
+    required queue,
+    required storage,
+  }) {
+    this.api = api;
+    this.queue = queue;
+    this.storage = storage;
+  }
 
   run() {
     sendSnapshotsFromQueue();
@@ -30,7 +37,8 @@ class Sender {
         Snapshot nextSnap = queue.next();
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
-          logger.info('Sending snapshot: $json');
+          logger.info('Sending ${nextSnap.toString()}');
+          print(nextSnap.toString());
           await api.sendSnapshot(json);
           logger.info('Snapshot sended: ${nextSnap.id}');
           queue.remove(nextSnap);

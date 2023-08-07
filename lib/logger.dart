@@ -2,7 +2,7 @@ import 'dart:async';
 
 enum LogType { info, error, warning }
 
-String humanReadableTypeName(LogType type) {
+String _humanReadableTypeName(LogType type) {
   switch (type) {
     case LogType.info:
       return "Info message";
@@ -13,32 +13,36 @@ String humanReadableTypeName(LogType type) {
   }
 }
 
-String humanReadableTimeStamp(DateTime date) {
+String _humanReadableTimeStamp(DateTime date) {
   return '[${date.year}/${date.month}/${date.day}]: ${date.hour}:${date.minute}:${date.second}.${date.millisecond}';
 }
 
 class LogRecord {
+  final DateTime _timestamp = DateTime.now();
   LogType type;
   String msg;
-  final DateTime _timestamp = DateTime.now();
   LogRecord(this.type, this.msg);
 
   get typeName {
-    return humanReadableTypeName(type);
+    return _humanReadableTypeName(type);
   }
 
   get time {
-    return humanReadableTimeStamp(_timestamp);
+    return _humanReadableTimeStamp(_timestamp);
   }
 }
 
 class Logger {
   // 10_000 must be enough for write logs 8 hours every 3 second
-  // TODO: dump it to disk instead of keeping in memory
-  int maxRecords;
-  Logger({this.maxRecords = 10000}) {
+  int maxRecords = 10000;
+
+  // Singleton
+  static final Logger _singleton = Logger._internal();
+  factory Logger() => _singleton;
+  Logger._internal() {
     info('Logger started');
   }
+
   final List<LogRecord> _records = <LogRecord>[];
   final List<Function> _listeners = <Function>[];
 
@@ -76,3 +80,13 @@ class Logger {
     };
   }
 }
+
+// class Logger {
+//   static final Logger _logger = Logger._internal();
+
+//   factory Logger() {
+//     return _logger;
+//   }
+
+//   Logger._internal();
+// }

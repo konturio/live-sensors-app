@@ -40,6 +40,14 @@ class MeasurementsTable {
         'z': z,
         'timestamp': timestamp,
       };
+
+  @override
+  String toString() {
+    return 'x: $x\n'
+    'y: $y\n'
+    'z: $z\n'
+    'timestamp: $timestamp';
+  }
 }
 
 class Snapshot {
@@ -54,6 +62,8 @@ class Snapshot {
   SnapshotError? error;
   late DateTime? endDateTime;
   late Position? position;
+
+  bool _sealed = false;
 
   Snapshot({
     required this.user,
@@ -83,9 +93,13 @@ class Snapshot {
   seal(Position pos) {
     position = pos;
     endDateTime = DateTime.now();
+    _sealed = true;
   }
 
   add(Measurement m) {
+    if (_sealed) {
+      throw Error();
+    }
     accelerometer.add(m.$1.data.x, m.$1.data.y, m.$1.data.z, m.$1.timestamp);
     gyroscope.add(m.$2.data.x, m.$2.data.y, m.$2.data.z, m.$2.timestamp);
     magnetometer.add(m.$3.data.x, m.$3.data.y, m.$3.data.z, m.$3.timestamp);
@@ -136,4 +150,23 @@ class Snapshot {
         'magnetometer': magnetometer.toJson(),
         'error': error?.toJson(),
       };
+
+  @override
+  String toString() {
+    try {
+      return 'Snapshot:\n'
+      '- id: $id\n'
+      '- user: ${user.id}\n'
+      '- userAgent:\n$userAgent\n'
+      '- error: $error\n'
+      '- accelerometer: ${accelerometer.x.length} records\n'
+      '- gyroscope: ${gyroscope.x.length} records\n'
+      '- magnetometer: ${magnetometer.x.length} records\n'
+      '- startDateTime: $startDateTime\n'
+      '- endDateTime: $endDateTime\n';
+    } catch (e) {
+      print(e);
+      return super.toString();
+    }
+  }
 }

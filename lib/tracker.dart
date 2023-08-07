@@ -1,37 +1,67 @@
+import 'dart:async';
+import 'package:live_sensors/logger.dart';
+
 import 'sensors.dart';
 import 'snapshot.dart';
-import 'logger.dart';
 import 'queue.dart';
 import 'user.dart';
 
 class Tracker {
-  final SnapshotsQueue queue;
-  final Logger logger;
-  final User user;
-  final String userAgent;
-  final Stream<SensorsData> sensors;
-  final Stream position;
+  final Logger logger = Logger();
+  late SnapshotsQueue queue;
+  late User user;
+  late String userAgent;
+  late Stream<SensorsData> sensors;
+  late Stream position;
+  bool isPaused = false;
+  StreamSubscription? sensorsSubscription;
+  StreamSubscription? positionSubscription;
 
-  Tracker({
-    required this.user,
-    required this.userAgent,
-    required this.queue,
-    required this.logger,
-    required this.sensors,
-    required this.position,
-  });
+  Tracker();
 
-  Future<void> track() async {
+  setup({
+    required user,
+    required userAgent,
+    required queue,
+    required sensors,
+    required position,
+  }) {
+    this.user = user;
+    this.userAgent = userAgent;
+    this.queue = queue;
+    this.sensors = sensors;
+    this.position = position;
+  }
+
+  track() {
     Snapshot snap = Snapshot.init(user, userAgent);
 
-    sensors.listen((events) {
+    // Fill current snapshot with sensors data
+    sensorsSubscription = sensors.listen((events) {
       snap.add(events);
     });
 
-    position.listen((event) {
+    // Finalize current snapshot, and create next one
+    positionSubscription = position.listen((event) {
       snap.seal(event);
       queue.add(snap);
       snap = Snapshot.init(user, userAgent);
     });
+
+    if (isPaused) {
+      pause();
+    }
+  }
+
+  pause() {
+    isPaused = true;
+    sensorsSubscription?.pause();
+    positionSubscription?.pause();
+  }
+
+  resume() {
+    isPaused = false;
+    sensorsSubscription?.resume();
+    positionSubscription?.resume();
   }
 }

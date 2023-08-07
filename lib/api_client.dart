@@ -1,23 +1,30 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:live_sensors/user.dart';
+import 'package:live_sensors/logger.dart';
+import 'package:live_sensors/utils.dart';
 
 class ApiClient {
-  final User user;
+  final Logger logger = Logger();
+  User? user;
 
-  ApiClient(this.user);
-  // Future<void> login() await {
+  ApiClient();
 
-  // }
+  authorize(User user) {
+    this.user = user;
+  }
 
   Future<void> sendSnapshot(Map<String, dynamic> payload) async {
-    // return Future.delayed(const Duration(seconds: 3));
+    String? accessToken = user?.accessToken;
+    if (accessToken == null) {
+      throw ErrorWithMessage('Unauthorized request');
+    }
 
     final response = await http.post(
       Uri.parse('https://disaster.ninja/active/api/features/live-sensor'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${user.accessToken}'
+        'Authorization': 'Bearer ${accessToken}'
       },
       body: jsonEncode(payload),
     );
