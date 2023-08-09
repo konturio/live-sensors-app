@@ -15,7 +15,7 @@ class SecureStorageService {
 
 class AuthService {
   final Logger logger = Logger();
-
+  bool isAuthorized = false;
   AuthService();
 
   static const String loginPath =
@@ -23,7 +23,18 @@ class AuthService {
   static const String refreshPath =
       'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token';
 
-  static Future<User> loadUser() async {
+  restoreSession() async {
+    try {
+      User user = await _loadUser();
+      isAuthorized = true;
+      return user;
+    } on NeverAuthorized {
+      isAuthorized = false;
+      return null;
+    }
+  }
+
+  static Future<User> _loadUser() async {
     final json = await SecureStorageService.storage.read(
       key: SecureStorageService.userKey,
     );
@@ -42,7 +53,7 @@ class AuthService {
     );
   }
 
-  static Future<void> refreshToken(User user) async {
+  Future<void> refreshToken(User user) async {
     final response = await http.post(
       Uri.parse(refreshPath),
       body: {
@@ -65,6 +76,7 @@ class AuthService {
       case 300:
       case 500:
       default:
+        isAuthorized = false;
         throw Exception('Error contacting the server!');
     }
   }
@@ -74,6 +86,7 @@ class AuthService {
     await SecureStorageService.storage.delete(
       key: SecureStorageService.userKey,
     );
+    isAuthorized = false;
   }
 
   Future<User> login({
@@ -102,14 +115,17 @@ class AuthService {
           'refreshExpiresIn': json['refresh_expires_in'],
         });
         saveUser(user);
+        isAuthorized = true;
         startRefreshCycle(user);
         return user;
       case 400:
         final json = jsonDecode(response.body);
-        throw LoginError();
+        isAuthorized = false;
+        throw BadCredentials(json['error_description'] ?? 'Unknown error');
       case 300:
       case 500:
       default:
+        isAuthorized = false;
         throw LoginError();
     }
   }
@@ -120,7 +136,7 @@ class AuthService {
     while (keepTokenFresh) {
       // TODO - read duration from token
       await Future.delayed(const Duration(minutes: 3));
-      refreshToken(user);
+      await refreshToken(user);
     }
   }
 

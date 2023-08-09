@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:live_sensors/main.dart';
+import 'package:live_sensors/controller.dart';
 
 class ToggleTrackingBtn extends StatefulWidget {
   final AppController controller;

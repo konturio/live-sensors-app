@@ -36,7 +36,6 @@ class Sender {
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
           logger.info('Sending ${nextSnap.toString()}');
-          print(nextSnap.toString());
           await api.sendSnapshot(json);
           logger.info('Snapshot sended: ${nextSnap.id}');
           queue.remove(nextSnap);

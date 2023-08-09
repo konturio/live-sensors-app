@@ -3,7 +3,7 @@ import 'package:live_sensors/snapshot/snapshot.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../logger/logger.dart';
+import 'package:live_sensors/logger/logger.dart';
 
 class Storage {
   final Logger logger = Logger();

@@ -64,4 +64,9 @@ class Tracker {
     sensorsSubscription?.resume();
     positionSubscription?.resume();
   }
+
+  dispose() async {
+    await sensorsSubscription?.cancel();
+    await positionSubscription?.cancel();
+  }
 }

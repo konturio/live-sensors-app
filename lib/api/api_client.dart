@@ -14,6 +14,10 @@ class ApiClient {
     this.user = user;
   }
 
+  unauthorize() {
+    user = null;
+  }
+
   Future<void> sendSnapshot(Map<String, dynamic> payload) async {
     String? accessToken = user?.accessToken;
     if (accessToken == null) {

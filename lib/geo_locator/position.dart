@@ -59,7 +59,7 @@ class GeoLocator {
   GeoLocator() {
     _streamController =
         StreamController<Position>(onListen: _initTrackPosition);
-    stream = _streamController.stream;
+    stream = _streamController.stream.asBroadcastStream();
   }
 
   _initTrackPosition() async {
