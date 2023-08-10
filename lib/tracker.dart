@@ -38,14 +38,21 @@ class Tracker {
 
     // Fill current snapshot with sensors data
     sensorsSubscription = sensors.listen((events) {
+      if (isPaused) return;
       snap.add(events);
     });
 
     // Finalize current snapshot, and create next one
+    bool skip = false; // After pause we still ned finalize current chunk
     positionSubscription = position.listen((event) {
+      if (isPaused && skip) {
+        // Tracking paused and last snapshot finalized
+        return;
+      }
       snap.seal(event);
       queue.add(snap);
       snap = Snapshot.init(user, userAgent);
+      skip = isPaused;
     });
 
     if (isPaused) {
@@ -55,14 +62,15 @@ class Tracker {
 
   pause() {
     isPaused = true;
-    sensorsSubscription?.pause();
-    positionSubscription?.pause();
+
+    // sensorsSubscription?.pause();
+    // positionSubscription?.pause();
   }
 
   resume() {
     isPaused = false;
-    sensorsSubscription?.resume();
-    positionSubscription?.resume();
+    // sensorsSubscription?.resume();
+    // positionSubscription?.resume();
   }
 
   dispose() async {
