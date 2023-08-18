@@ -29,17 +29,17 @@ class HomePage extends StatelessWidget {
           ],
           bottom: const TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.pending_actions)),
               Tab(icon: Icon(Icons.info)),
               Tab(icon: Icon(Icons.dns)),
+              Tab(icon: Icon(Icons.pending_actions)),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            StatsView(controller: controller),
             LoggerView(),
             QueueView(queue: controller.queue),
+            StatsView(controller: controller),
           ],
         ),
         floatingActionButton: ToggleTrackingBtn(controller: controller),

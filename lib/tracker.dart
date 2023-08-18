@@ -6,7 +6,7 @@ import 'package:live_sensors/utils/stats.dart';
 import 'queue/queue.dart';
 import 'sensors/sensors.dart';
 import 'snapshot/snapshot.dart';
-import 'user/user.dart';
+import 'entities/user.dart';
 
 
 
@@ -70,7 +70,6 @@ class Tracker {
 
   pause() {
     isPaused = true;
-
     // sensorsSubscription?.pause();
     // positionSubscription?.pause();
   }
@@ -82,6 +81,7 @@ class Tracker {
   }
 
   dispose() async {
+    pause();
     await sensorsSubscription?.cancel();
     await positionSubscription?.cancel();
   }

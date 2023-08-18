@@ -12,6 +12,7 @@ class Sender {
   late SnapshotsQueue queue;
   late ApiClient api;
   late Storage storage;
+  bool isStopped = false;
 
   Sender();
 
@@ -26,21 +27,24 @@ class Sender {
   }
 
   run() {
+    isStopped = false;
     sendSnapshotsFromQueue();
     sendSnapshotsFromStorage();
   }
 
+  stop() {
+   isStopped = true;
+  }
+
   sendSnapshotsFromQueue() async {
     logger.info('Start sending from snapshot queue');
-    while (true) {
+    while (!isStopped) {
       try {
         Snapshot nextSnap = queue.next();
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
           await api.sendSnapshot(json);
           queue.remove(nextSnap);
-        } on UnauthorizedException {
-          
         } catch (error) {
           SnapshotError errMessage = error is SnapshotError ? error : SnapshotError.unknown('unknown');
           logger.error('Fail to send snapshot ${nextSnap.id}.\n Reason: ${errMessage.message} ');
@@ -56,8 +60,8 @@ class Sender {
             // );
           }
         }
-      } on StateError {
-        await Future.delayed(const Duration(seconds: 10));
+      } on StateError { // No more snapshots in queue
+        await Future.delayed(const Duration(seconds: 1));
       }
     }
   }

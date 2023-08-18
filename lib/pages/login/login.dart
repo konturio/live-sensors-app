@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:live_sensors/auth/auth_service_error.dart';
 import 'package:live_sensors/controller.dart';
 
 class LoginPage extends StatefulWidget {
@@ -39,7 +38,10 @@ class _LoginPageState extends State<LoginPage> {
                   child: TextFormField(
                     controller: emailController,
                     decoration: const InputDecoration(
-                        border: OutlineInputBorder(), labelText: 'Email'),
+                      border: OutlineInputBorder(),
+                      labelText: 'Email',
+                    ),
+                    autofillHints: const [AutofillHints.email],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -55,13 +57,16 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(
-                        border: OutlineInputBorder(), labelText: 'Password'),
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
                       }
                       return null;
                     },
+                    autofillHints: const [AutofillHints.password],
                   ),
                 ),
                 Padding(
@@ -79,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
                               emailController.value.text,
                               passwordController.value.text,
                             );
-                          } on BadCredentials catch (e) {
+                          } on LoginFailedException catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

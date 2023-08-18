@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:live_sensors/snapshot/measurement.dart';
-import 'package:live_sensors/user/user.dart';
+import 'package:live_sensors/entities/user.dart';
 import 'package:uuid/uuid.dart';
 import 'snapnshot_error.dart';
 

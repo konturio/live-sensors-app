@@ -1,13 +1,14 @@
 import 'package:fk_user_agent/fk_user_agent.dart';
 import 'package:live_sensors/logger/logger.dart';
+import 'package:live_sensors/session_storage/session_storage.dart';
 import 'package:live_sensors/utils/state.dart';
-
-import 'auth/auth_service.dart';
+import 'entities/session.dart';
+import 'http_client/errors.dart';
 import 'http_client/open_id_api.dart';
 import 'http_client/open_id_client.dart';
-import 'http_client/tokens.dart';
+import 'entities/tokens.dart';
 import 'sensors/sensors.dart';
-import 'user/user.dart';
+import 'entities/user.dart';
 import 'api/api_client.dart';
 import 'geo_locator/position.dart';
 import 'queue/queue.dart';
@@ -16,6 +17,11 @@ import 'storage/storage.dart';
 import 'config.dart';
 import 'sender.dart';
 import 'tracker.dart';
+
+class LoginFailedException implements Exception {
+  final String? message;
+  const LoginFailedException([this.message]);
+}
 
 // TODO Inject auti in api? or api in auth? How to refresh token
 class AppControllerState {
@@ -29,24 +35,28 @@ class AppControllerState {
 
 class AppController extends SimpleState<AppControllerState> {
   final Logger logger = Logger();
+  /* Store snapshots on hard drive */
+  final Storage storage = Storage();
   final GeoLocator geoLocator;
   final Sensors sensors;
 
   late AppConfig config;
-  late SnapshotsQueue queue;
   late ApiClient api;
   late OpenIdClient openIdClient;
 
+  final SnapshotsQueue queue;
   /* Listen sensors and position, and creates new snapshots in queue */
-  late Tracker tracker;
-  /* Store snapshots on hard drive */
-  late Storage storage;
-  /* Sends snapshots from queue */
-  late Sender sender;
+  final Tracker tracker;
 
-  AppController():
-    sensors = Sensors(),
-    geoLocator = GeoLocator();
+  /* Sends snapshots from queue */
+  final Sender sender;
+
+  AppController()
+      : sensors = Sensors(),
+        geoLocator = GeoLocator(),
+        queue = SnapshotsQueue(),
+        tracker = Tracker(),
+        sender = Sender();
 
   @override
   initState() {
@@ -56,21 +66,22 @@ class AppController extends SimpleState<AppControllerState> {
   // Create common application structure
   init() async {
     SessionStorage sessionStorage = SessionStorage();
+    Session session = Session();
     config = AppConfig().read();
-    Session session = await sessionStorage.restoreLast();
 
     openIdClient = OpenIdClient(
       OpenIdApi(
           refreshPath: Uri.parse(
         'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token',
       )),
-      tokens: session.tokens,
       postAuth: (tokens) {
-        if (tokens) {
+        if (tokens != null) {
           _postLogin(tokens);
         } else {
           _postLogout();
         }
+        session.tokens = tokens;
+        sessionStorage.saveSession(session);
       },
       postRefresh: (tokens) {
         session.tokens = tokens;
@@ -79,10 +90,23 @@ class AppController extends SimpleState<AppControllerState> {
     );
 
     api = ApiClient(openIdClient);
+
+    session = await sessionStorage.restoreLast();
+    Tokens? lastTokens = session.tokens;
+    if (lastTokens != null) {
+      openIdClient.setTokens(lastTokens);
+    }
+    setState(() {
+      state.isBooted = true;
+    });
   }
 
   login(String login, String password) async {
-    await openIdClient.login(email: login, password: password);
+    try {
+      await openIdClient.login(email: login, password: password);
+    } on BadCredentialsException catch (e) {
+      throw LoginFailedException(e.message);
+    }
   }
 
   _postLogin(Tokens tokens) async {
@@ -99,11 +123,6 @@ class AppController extends SimpleState<AppControllerState> {
   }
 
   setup(User user) async {
-    queue = SnapshotsQueue();
-    tracker = Tracker();
-    storage = Storage();
-    sender = Sender();
-
     sender.setup(
       api: api,
       storage: storage,
@@ -122,15 +141,14 @@ class AppController extends SimpleState<AppControllerState> {
     );
   }
 
-  logout() async {
-    await _postLogout();
+  logout() {
+    openIdClient.logout();
   }
 
-  _postLogout() async {
+  _postLogout() {
     stop();
-    await auth.logout();
     setState(() {
-      state.isAuthorized = auth.isAuthorized;
+      state.isAuthorized = false;
     });
   }
 
@@ -144,7 +162,8 @@ class AppController extends SimpleState<AppControllerState> {
 
   stop() {
     tracker.dispose();
-    tracker.pause();
+    queue.clear();
+    sender.stop();
     setState(() {
       state.isTracking = false;
     });

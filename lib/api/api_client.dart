@@ -10,7 +10,7 @@ class ApiClient {
   ApiClient(http.Client httpClient) : _inner = httpClient;
 
   Future<void> sendSnapshot(Map<String, dynamic> payload) async {
-    final response = await http.post(
+    final response = await _inner.post(
       Uri.parse('https://disaster.ninja/active/api/features/live-sensor'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -23,6 +23,7 @@ class ApiClient {
         throw ApiBackendException(response.statusCode.toString());
 
       case == 401:
+      case == 403:
         throw UnauthorizedException(response.statusCode.toString());
 
       case >= 400:

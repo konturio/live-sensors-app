@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:live_sensors/http_client/tokens.dart';
+import 'package:live_sensors/entities/tokens.dart';
 import 'dart:convert';
 
 import 'errors.dart';
@@ -29,7 +29,7 @@ class OpenIdApi {
       case 200:
         final json = jsonDecode(response.body);
         return Tokens(
-          sessionId: json['id'],
+          sessionId: json['session_state'],
           expiresIn: json['expires_in'],
           refreshExpiresIn: json['refresh_expires_in'],
           refreshToken: json['refresh_token'],
@@ -60,7 +60,7 @@ class OpenIdApi {
       case 200:
         final json = jsonDecode(response.body);
         return Tokens(
-          sessionId: json['id'],
+          sessionId: json['session_state'],
           expiresIn: json['expires_in'],
           refreshExpiresIn: json['refresh_expires_in'],
           refreshToken: json['refresh_token'],

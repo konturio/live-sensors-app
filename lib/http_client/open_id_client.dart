@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:live_sensors/http_client/tokens.dart';
+import 'package:live_sensors/entities/tokens.dart';
 import 'package:live_sensors/http_client/utils.dart';
 import 'errors.dart';
 import 'open_id_api.dart';
@@ -10,10 +10,16 @@ import 'open_id_api.dart';
 class OpenIdClient extends http.BaseClient {
   final http.Client _inner;
   final OpenIdApi openIdApi;
+  final void Function(Tokens?) postAuth;
+  final void Function(Tokens) postRefresh;
   Tokens? tokens;
 
-  OpenIdClient(this.openIdApi, {http.Client? inner, this.tokens})
-      : _inner = inner ?? http.Client();
+  OpenIdClient(
+    this.openIdApi, {
+    http.Client? inner,
+    required this.postAuth,
+    required this.postRefresh,
+  }) : _inner = inner ?? http.Client();
 
   String _getAuthString() {
     String? accessToken = tokens?.accessToken;
@@ -24,17 +30,29 @@ class OpenIdClient extends http.BaseClient {
   }
 
   Future? _updateTokensActiveRequest;
-  _updateTokens() async {
+  _tokensUpdated() async {
     if (_updateTokensActiveRequest != null) {
       return _updateTokensActiveRequest;
     } else {
       String? refreshToken = tokens?.refreshToken;
       if (refreshToken != null) {
-        _updateTokensActiveRequest = openIdApi.refreshTokens(refreshToken);
+        _updateTokensActiveRequest = _updateTokens(refreshToken);
       } else {
         throw ErrorDescription('Refresh token missing');
       }
     }
+  }
+
+  Future<Tokens> _updateTokens(refreshToken) async {
+    Tokens refreshedTokens = await openIdApi.refreshTokens(refreshToken);
+    tokens = refreshedTokens;
+    postRefresh(refreshedTokens);
+    return refreshedTokens;
+  }
+
+  setTokens(Tokens t) {
+    tokens = t;
+    postAuth(t);
   }
 
   /// Add middleware for process token expiration case
@@ -53,7 +71,7 @@ class OpenIdClient extends http.BaseClient {
         throw TooMuchAuthAttemptsException();
       }
       try {
-        tokens = await _updateTokens();
+        tokens = await _tokensUpdated();
       } catch (e) {
         // TODO: check exact error code for give user better feedback
         throw RefreshTokenExpiredException();
@@ -73,7 +91,7 @@ class OpenIdClient extends http.BaseClient {
   startRefreshCycle() async {
     // TODO - read duration from token;
     preRefresh = Timer.periodic(const Duration(minutes: 3), (timer) {
-      _updateTokens();
+      _tokensUpdated();
     });
   }
 
@@ -87,10 +105,12 @@ class OpenIdClient extends http.BaseClient {
   }) async {
     tokens = await openIdApi.login(email: email, password: password);
     startRefreshCycle();
+    postAuth(tokens);
   }
 
   logout() {
     tokens = null;
     stopRefreshCycle();
+    postAuth(tokens);
   }
 }

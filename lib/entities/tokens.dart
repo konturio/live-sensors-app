@@ -1,21 +1,21 @@
-class User {
-  final String id;
-  String accessToken;
+class Tokens {
+  String sessionId;
   String refreshToken;
+  String accessToken;
   int expiresIn;
   int refreshExpiresIn;
 
-  User({
-    required this.id,
-    required this.accessToken,
+  Tokens({
+    required this.sessionId,
     required this.refreshToken,
+    required this.accessToken,
     required this.expiresIn,
     required this.refreshExpiresIn,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
+  factory Tokens.fromJson(Map<String, dynamic> json) {
+    return Tokens(
+      sessionId: json['sessionId'],
       accessToken: json['accessToken'],
       refreshToken: json['refreshToken'],
       expiresIn: json['expiresIn'],
@@ -24,7 +24,7 @@ class User {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
+        'sessionId': sessionId,
         'accessToken': accessToken,
         'refreshToken': refreshToken,
         'expiresIn': expiresIn,

@@ -25,4 +25,8 @@ class SnapshotsQueue extends SimpleState<Set<Snapshot>> {
   Snapshot next() {
     return state.first;
   }
+
+  clear() {
+    state.clear();
+  }
 }
