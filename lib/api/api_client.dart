@@ -1,40 +1,44 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:live_sensors/user/user.dart';
 import 'package:live_sensors/logger/logger.dart';
-import 'package:live_sensors/utils.dart';
+import 'errors.dart';
 
 class ApiClient {
   final Logger logger = Logger();
-  User? user;
+  final http.Client _inner;
 
-  ApiClient();
-
-  authorize(User user) {
-    this.user = user;
-  }
-
-  unauthorize() {
-    user = null;
-  }
+  ApiClient(http.Client httpClient) : _inner = httpClient;
 
   Future<void> sendSnapshot(Map<String, dynamic> payload) async {
-    String? accessToken = user?.accessToken;
-    if (accessToken == null) {
-      throw ErrorWithMessage('Unauthorized request');
-    }
-
     final response = await http.post(
       Uri.parse('https://disaster.ninja/active/api/features/live-sensor'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${accessToken}'
       },
       body: jsonEncode(payload),
     );
 
+    switch (response.statusCode) {
+      case >= 500:
+        throw ApiBackendException(response.statusCode.toString());
+
+      case == 401:
+        throw UnauthorizedException(response.statusCode.toString());
+
+      case >= 400:
+        throw ApiClientException(response.statusCode.toString());
+
+      case >= 300:
+      case >= 200:
+      case >= 100:
+        break;
+
+      default:
+        break;
+    }
+
     if (response.statusCode != 200) {
-      throw Exception('Failed to save snapshot.');
+      throw Exception('Failed to save snapshot. ${response.statusCode}');
     }
   }
 }

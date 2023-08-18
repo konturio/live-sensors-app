@@ -1,4 +1,5 @@
 import 'package:live_sensors/logger/logger.dart';
+import 'api/errors.dart';
 import 'snapshot/snapnshot_error.dart';
 import 'snapshot/snapshot.dart';
 import 'snapshot/snapshot_to_geojson.dart';
@@ -30,28 +31,29 @@ class Sender {
   }
 
   sendSnapshotsFromQueue() async {
+    logger.info('Start sending from snapshot queue');
     while (true) {
       try {
         Snapshot nextSnap = queue.next();
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
-          logger.info('Sending ${nextSnap.toString()}');
           await api.sendSnapshot(json);
-          logger.info('Snapshot sended: ${nextSnap.id}');
           queue.remove(nextSnap);
+        } on UnauthorizedException {
+          
         } catch (error) {
-          logger.error('Fail to send snapshot ${nextSnap.id}');
-          nextSnap.error =
-              error is SnapshotError ? error : SnapshotError.unknown('unknown');
+          SnapshotError errMessage = error is SnapshotError ? error : SnapshotError.unknown('unknown');
+          logger.error('Fail to send snapshot ${nextSnap.id}.\n Reason: ${errMessage.message} ');
+          nextSnap.error = errMessage;
           try {
-            logger.info(
-              'Saving snapshot in persist storage: ${nextSnap.id}',
-            );
+            // logger.info(
+            //   'Saving snapshot in persist storage: ${nextSnap.id}',
+            // );
             // await storage.save(nextSnap);
           } catch (e) {
-            logger.error(
-              'Saving snapshot in persist storage error: ${nextSnap.id}',
-            );
+            // logger.error(
+            //   'Saving snapshot in persist storage error: ${nextSnap.id}',
+            // );
           }
         }
       } on StateError {
