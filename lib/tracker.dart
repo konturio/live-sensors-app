@@ -1,10 +1,14 @@
 import 'dart:async';
-import 'package:live_sensors/logger/logger.dart';
 
+import 'package:live_sensors/logger/logger.dart';
+import 'package:live_sensors/utils/stats.dart';
+
+import 'queue/queue.dart';
 import 'sensors/sensors.dart';
 import 'snapshot/snapshot.dart';
-import 'queue/queue.dart';
 import 'user/user.dart';
+
+
 
 class Tracker {
   final Logger logger = Logger();
@@ -13,6 +17,8 @@ class Tracker {
   late String userAgent;
   late Stream<SensorsData> sensors;
   late Stream position;
+  CallPerSecMeasure sensorsFreq = CallPerSecMeasure();
+  CallPerSecMeasure positionFreq = CallPerSecMeasure();
   bool isPaused = false;
   StreamSubscription? sensorsSubscription;
   StreamSubscription? positionSubscription;
@@ -38,13 +44,15 @@ class Tracker {
 
     // Fill current snapshot with sensors data
     sensorsSubscription = sensors.listen((events) {
+      sensorsFreq.tick();
       if (isPaused) return;
       snap.add(events);
     });
 
     // Finalize current snapshot, and create next one
-    bool skip = false; // After pause we still ned finalize current chunk
+    bool skip = false; // After pause we still need finalize current chunk
     positionSubscription = position.listen((event) {
+      positionFreq.tick();
       if (isPaused && skip) {
         // Tracking paused and last snapshot finalized
         return;

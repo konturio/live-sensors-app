@@ -1,6 +1,6 @@
 import 'package:live_sensors/logger/logger.dart';
 import 'package:live_sensors/snapshot/snapshot.dart';
-import 'package:live_sensors/utils.dart';
+import 'package:live_sensors/utils/state.dart';
 
 class SnapshotsQueue extends SimpleState<Set<Snapshot>> {
   final Logger logger = Logger();

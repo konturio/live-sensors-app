@@ -1,7 +1,3 @@
-class ErrorWithMessage extends Error {
-  String message;
-  ErrorWithMessage(this.message);
-}
 
 class SimpleState<S> {
   final List<Function> _listeners = <Function>[];

@@ -31,9 +31,9 @@ class _ToggleTrackingBtnState extends State<ToggleTrackingBtn> {
 
   toggleTracking() {
     if (isTracking) {
-      widget.controller.pauseTracking();
+      widget.controller.pause();
     } else {
-      widget.controller.resumeTracking();
+      widget.controller.resume();
     }
   }
 

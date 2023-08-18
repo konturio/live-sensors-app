@@ -3,6 +3,7 @@ import 'package:live_sensors/controller.dart';
 import 'package:live_sensors/logger/view.dart';
 import 'package:live_sensors/queue/view.dart';
 import 'toggle_tracking_btn.dart';
+import 'stats.dart';
 
 class HomePage extends StatelessWidget {
   final AppController controller;
@@ -11,7 +12,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Live sensors'),
@@ -28,6 +29,7 @@ class HomePage extends StatelessWidget {
           ],
           bottom: const TabBar(
             tabs: [
+              Tab(icon: Icon(Icons.pending_actions)),
               Tab(icon: Icon(Icons.info)),
               Tab(icon: Icon(Icons.dns)),
             ],
@@ -35,6 +37,7 @@ class HomePage extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
+            StatsView(controller: controller),
             LoggerView(),
             QueueView(queue: controller.queue),
           ],
