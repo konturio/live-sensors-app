@@ -18,11 +18,6 @@ class AuthService {
   bool isAuthorized = false;
   AuthService();
 
-  static const String loginPath =
-      'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token';
-  static const String refreshPath =
-      'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token';
-
   restoreSession() async {
     try {
       User user = await _loadUser();
@@ -53,94 +48,14 @@ class AuthService {
     );
   }
 
-  Future<void> refreshToken(User user) async {
-    final response = await http.post(
-      Uri.parse(refreshPath),
-      body: {
-        'client_id': 'kontur_platform',
-        'refresh_token': user.refreshToken,
-        'grant_type': 'refresh_token'
-      },
-    );
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        final tokenType = json['token_type'];
-        user.refreshToken = json['refresh_token'];
-        user.accessToken = json['access_token'];
-        saveUser(user);
-        break;
-      case 400:
-      case 300:
-      case 500:
-      default:
-        isAuthorized = false;
-        throw Exception('Error contacting the server!');
-    }
-  }
-
   Future<void> logout() async {
-    stopRefreshCycle();
-    await SecureStorageService.storage.delete(
-      key: SecureStorageService.userKey,
-    );
-    isAuthorized = false;
+
   }
 
   Future<User> login({
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse(loginPath),
-      body: {
-        'username': email,
-        'password': password,
-        'client_id': 'kontur_platform',
-        'grant_type': 'password'
-      },
-    );
-
-    final statusType = (response.statusCode / 100).floor() * 100;
-    switch (statusType) {
-      case 200:
-        final json = jsonDecode(response.body);
-        final user = User.fromJson({
-          'id': json['session_state'],
-          'accessToken': json['access_token'],
-          'refreshToken': json['refresh_token'],
-          'expiresIn': json['expires_in'],
-          'refreshExpiresIn': json['refresh_expires_in'],
-        });
-        saveUser(user);
-        isAuthorized = true;
-        startRefreshCycle(user);
-        return user;
-      case 400:
-        final json = jsonDecode(response.body);
-        isAuthorized = false;
-        throw BadCredentials(json['error_description'] ?? 'Unknown error');
-      case 300:
-      case 500:
-      default:
-        isAuthorized = false;
-        throw LoginError();
-    }
-  }
-
-  bool keepTokenFresh = false;
-  startRefreshCycle(User user) async {
-    keepTokenFresh = true;
-    while (keepTokenFresh) {
-      // TODO - read duration from token
-      await Future.delayed(const Duration(minutes: 3));
-      await refreshToken(user);
-    }
-  }
-
-  stopRefreshCycle() {
-    keepTokenFresh = false;
+   
   }
 }
