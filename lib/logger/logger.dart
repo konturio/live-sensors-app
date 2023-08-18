@@ -80,13 +80,3 @@ class Logger {
     };
   }
 }
-
-// class Logger {
-//   static final Logger _logger = Logger._internal();
-
-//   factory Logger() {
-//     return _logger;
-//   }
-
-//   Logger._internal();
-// }
