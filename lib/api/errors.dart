@@ -5,6 +5,10 @@ class ApiServiceException implements Exception {
   String toString() => 'ApiServiceException: $message';
 }
 
+class BadRequestException extends ApiServiceException {
+  BadRequestException([super.message = 'BadRequestException']);
+}
+
 class UnauthorizedException extends ApiServiceException {
   UnauthorizedException([super.message = 'Unauthorized']);
 }

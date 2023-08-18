@@ -22,6 +22,9 @@ class ApiClient {
       case >= 500:
         throw ApiBackendException(response.statusCode.toString());
 
+      case == 400:
+         throw BadRequestException();
+         
       case == 401:
       case == 403:
         throw UnauthorizedException(response.statusCode.toString());

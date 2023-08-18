@@ -1,4 +1,5 @@
 import 'package:live_sensors/logger/logger.dart';
+import 'api/errors.dart';
 import 'snapshot/snapnshot_error.dart';
 import 'snapshot/snapshot.dart';
 import 'snapshot/snapshot_to_geojson.dart';
@@ -33,7 +34,7 @@ class Sender {
   }
 
   stop() {
-   isStopped = true;
+    isStopped = true;
   }
 
   sendSnapshotsFromQueue() async {
@@ -46,9 +47,16 @@ class Sender {
           await api.sendSnapshot(json);
           counter++;
           queue.remove(nextSnap);
+        } on BadRequestException {
+          // TODO: remove this after storage implemented
+          logger.error(
+              'Fail to send snapshot ${nextSnap.id}.\n Reason: Bad request');
+          queue.remove(nextSnap);
         } catch (error) {
-          SnapshotError errMessage = error is SnapshotError ? error : SnapshotError.unknown('unknown');
-          logger.error('Fail to send snapshot ${nextSnap.id}.\n Reason: ${errMessage.message} ');
+          SnapshotError errMessage =
+              error is SnapshotError ? error : SnapshotError.unknown('unknown');
+          logger.error(
+              'Fail to send snapshot ${nextSnap.id}.\n Reason: ${errMessage.message} ');
           nextSnap.error = errMessage;
           try {
             // logger.info(
@@ -61,7 +69,8 @@ class Sender {
             // );
           }
         }
-      } on StateError { // No more snapshots in queue
+      } on StateError {
+        // No more snapshots in queue
         await Future.delayed(const Duration(seconds: 1));
       }
     }
