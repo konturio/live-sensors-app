@@ -1,5 +1,4 @@
 import 'package:live_sensors/logger/logger.dart';
-import 'api/errors.dart';
 import 'snapshot/snapnshot_error.dart';
 import 'snapshot/snapshot.dart';
 import 'snapshot/snapshot_to_geojson.dart';
