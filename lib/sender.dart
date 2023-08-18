@@ -12,6 +12,7 @@ class Sender {
   late SnapshotsQueue queue;
   late ApiClient api;
   late Storage storage;
+  int counter = 0;
   bool isStopped = false;
 
   Sender();
@@ -44,6 +45,7 @@ class Sender {
         try {
           final json = snapshotToGeoJson(nextSnap).toJson();
           await api.sendSnapshot(json);
+          counter++;
           queue.remove(nextSnap);
         } catch (error) {
           SnapshotError errMessage = error is SnapshotError ? error : SnapshotError.unknown('unknown');

@@ -10,14 +10,25 @@ class StatsView extends StatefulWidget {
   State<StatsView> createState() => _StatsViewState();
 }
 
-class _StatsViewState extends State<StatsView> {
+class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
   String sensorsUpdates = 'Measuring...';
   String positionUpdates = 'Measuring...';
+  String snapshotsCount = 'Measuring...';
 
+  late AnimationController controller;
   late Function _unsubscribe;
 
   @override
   initState() {
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: widget.controller.tracker.positionFreq.updateStatsFrequency,
+    )..addListener(() {
+        setState(() {});
+      });
+    controller.repeat();
     super.initState();
     Duration freq = widget.controller.tracker.positionFreq.updateStatsFrequency;
     Timer.periodic(freq, (timer) {
@@ -27,6 +38,7 @@ class _StatsViewState extends State<StatsView> {
               '${widget.controller.tracker.positionFreq.mean.toStringAsPrecision(2)} times / sec';
           sensorsUpdates =
               '${widget.controller.tracker.sensorsFreq.mean.toStringAsPrecision(2)} times / sec';
+          snapshotsCount = '${widget.controller.sender.counter} pcs';
         });
       }
     });
@@ -39,8 +51,14 @@ class _StatsViewState extends State<StatsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            LinearProgressIndicator(
+              value: controller.value,
+              semanticsLabel: 'Linear progress indicator',
+            ),
+            const SizedBox(height: 8),
             Text('Position updates: $positionUpdates'),
             Text('Sensors updates: $sensorsUpdates'),
+            Text('Snapshots sended: $snapshotsCount'),
           ],
         ));
   }
