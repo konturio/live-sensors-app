@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:live_sensors/controller.dart';
 
@@ -14,6 +15,8 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
   String sensorsUpdates = 'Measuring...';
   String positionUpdates = 'Measuring...';
   String snapshotsCount = 'Measuring...';
+  String geoLocatorStats = '';
+  String version = '';
 
   late AnimationController controller;
   late Function _unsubscribe;
@@ -30,8 +33,10 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
       });
     controller.repeat();
     super.initState();
+    readVersion();
     Duration freq = widget.controller.tracker.positionFreq.updateStatsFrequency;
-    Timer.periodic(freq, (timer) {
+    Timer.periodic(freq, (timer) async {
+      geoLocatorStats = await widget.controller.geoLocator.getStats();
       if (mounted) {
         setState(() {
           positionUpdates =
@@ -42,6 +47,20 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
         });
       }
     });
+  }
+
+  readVersion() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      version = 'Version: ${packageInfo.version}';
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,9 +75,11 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
               semanticsLabel: 'Linear progress indicator',
             ),
             const SizedBox(height: 8),
+            Text(version),
             Text('Position updates: $positionUpdates'),
             Text('Sensors updates: $sensorsUpdates'),
-            Text('Snapshots sended: $snapshotsCount'),
+            Text('Snapshots sent: $snapshotsCount'),
+            Text(geoLocatorStats),
           ],
         ));
   }

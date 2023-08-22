@@ -1,5 +1,6 @@
 import 'package:live_sensors/logger/logger.dart';
 import 'api/errors.dart';
+import 'http_client/errors.dart';
 import 'snapshot/snapnshot_error.dart';
 import 'snapshot/snapshot.dart';
 import 'snapshot/snapshot_to_geojson.dart';
@@ -52,22 +53,19 @@ class Sender {
           logger.error(
               'Fail to send snapshot ${nextSnap.id}.\n Reason: Bad request');
           queue.remove(nextSnap);
-        } catch (error) {
-          SnapshotError errMessage =
-              error is SnapshotError ? error : SnapshotError.unknown('unknown');
+        } on AuthException catch (e) {
           logger.error(
-              'Fail to send snapshot ${nextSnap.id}.\n Reason: ${errMessage.message} ');
-          nextSnap.error = errMessage;
-          try {
-            // logger.info(
-            //   'Saving snapshot in persist storage: ${nextSnap.id}',
-            // );
-            // await storage.save(nextSnap);
-          } catch (e) {
-            // logger.error(
-            //   'Saving snapshot in persist storage error: ${nextSnap.id}',
-            // );
-          }
+            'Fail to send snapshot ${nextSnap.id}.\n Reason: $e',
+          );
+        } on SnapshotError catch (e) {
+          logger.error(
+            'Fail to send snapshot ${nextSnap.id}.\n Reason: ${e.message}',
+          );
+          nextSnap.error = e;
+        } catch (e) {
+          logger.error(
+            'Fail to send snapshot ${nextSnap.id}.\n Reason: $e',
+          );
         }
       } on StateError {
         // No more snapshots in queue

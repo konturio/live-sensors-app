@@ -25,4 +25,8 @@ class SessionStorage {
       value: jsonEncode(session.toJson()),
     );
   }
+
+  dropSession() async {
+    await storage.delete(key: SessionStorage.key);
+  }
 }

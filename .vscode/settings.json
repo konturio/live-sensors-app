@@ -8,4 +8,8 @@
     "statusBarItem.remoteForeground": "#e7e7e7"
   },
   "peacock.color": "#005f73",
+  "cSpell.words": [
+    "Geolocator",
+    "vsync"
+  ],
 }

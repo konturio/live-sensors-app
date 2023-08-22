@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
-import 'package:geolocator_apple/geolocator_apple.dart';
-import 'package:geolocator_android/geolocator_android.dart';
 import '../logger/logger.dart';
 import 'package:flutter/foundation.dart';
 
@@ -40,7 +38,8 @@ Future<Position> requestLocationPermission() async {
   // When we reach here, permissions are granted and we can
   // continue accessing the position of the device.
   return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best);
+    desiredAccuracy: LocationAccuracy.best,
+  );
 }
 
 class GeoLocatorError extends Error {
@@ -48,58 +47,75 @@ class GeoLocatorError extends Error {
   GeoLocatorError(this.message);
 }
 
-class GeoLocator {
+class GeoLocatorController {
   final Logger logger = Logger();
   late StreamController<Position> _streamController;
   late Stream<Position> stream;
   late LocationSettings locationSettings;
-  StreamSubscription<Position>? _positionStreamSubscription;
+  // StreamSubscription<Position>? _positionStreamSubscription;
   StreamSubscription<ServiceStatus>? _serviceStatusStreamSubscription;
 
-  GeoLocator() {
+  GeoLocatorController() {
     _streamController =
         StreamController<Position>(onListen: _initTrackPosition);
     stream = _streamController.stream.asBroadcastStream();
   }
 
+  Future<String> getStats() async {
+    LocationAccuracyStatus accuracy = await Geolocator.getLocationAccuracy();
+    return 'Accuracy: $accuracy';
+  }
+
   _initTrackPosition() async {
+    try {
+      _serviceStatusStreamSubscription =
+          Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+       logger.info("Geolocator service status changed to $status");
+      });
+    } catch (e) {
+      logger
+          .error("Attempt to subscribe to service status subscription failed");
+    }
     try {
       logger.info("Requesting permissions");
       Position position = await requestLocationPermission();
       logger.info("Permission granted");
       logger.info("Initial position: ${position.toString()}");
       logger.info("Create position stream");
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        locationSettings = AndroidSettings(
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          locationSettings = AndroidSettings(
+              accuracy: LocationAccuracy.best,
+              // distanceFilter: 100,
+              // forceLocationManager: true,
+              intervalDuration: const Duration(seconds: 1),
+              //(Optional) Set foreground notification config to keep the app alive
+              //when going to the background
+              foregroundNotificationConfig: const ForegroundNotificationConfig(
+                notificationText:
+                    "App keep tracking user location in background",
+                notificationTitle: "Live Sensors tracker",
+                enableWakeLock: true,
+              ));
+          break;
+
+        case TargetPlatform.iOS:
+        case TargetPlatform.macOS:
+          locationSettings = AppleSettings(
+            accuracy: LocationAccuracy.high,
+            activityType: ActivityType.fitness,
+            // distanceFilter: 100,
+            pauseLocationUpdatesAutomatically: true,
+            // Only set to true if our app will be started up in the background.
+            showBackgroundLocationIndicator: false,
+          );
+        default:
+          locationSettings = const LocationSettings(
             accuracy: LocationAccuracy.high,
             // distanceFilter: 100,
-            forceLocationManager: true,
-            intervalDuration: const Duration(seconds: 1),
-            //(Optional) Set foreground notification config to keep the app alive
-            //when going to the background
-            foregroundNotificationConfig: const ForegroundNotificationConfig(
-              notificationText: "App keep tracking user location in background",
-              notificationTitle: "Live Sensors tracker",
-              enableWakeLock: true,
-            ));
-      } else if (defaultTargetPlatform == TargetPlatform.iOS ||
-          defaultTargetPlatform == TargetPlatform.macOS) {
-        locationSettings = AppleSettings(
-          accuracy: LocationAccuracy.high,
-          activityType: ActivityType.fitness,
-          // distanceFilter: 100,
-          pauseLocationUpdatesAutomatically: true,
-          // Only set to true if our app will be started up in the background.
-          showBackgroundLocationIndicator: false,
-        );
-      } else {
-        locationSettings = const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          // distanceFilter: 100,
-        );
+          );
       }
 
-      // TODO: log service status messages status too
       Stream<Position> positionStream =
           Geolocator.getPositionStream(locationSettings: locationSettings);
       positionStream.pipe(_streamController);

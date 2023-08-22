@@ -37,7 +37,7 @@ class AppController extends SimpleState<AppControllerState> {
   final Logger logger = Logger();
   /* Store snapshots on hard drive */
   final Storage storage = Storage();
-  final GeoLocator geoLocator;
+  final GeoLocatorController geoLocator;
   final Sensors sensors;
 
   late AppConfig config;
@@ -53,7 +53,7 @@ class AppController extends SimpleState<AppControllerState> {
 
   AppController()
       : sensors = Sensors(),
-        geoLocator = GeoLocator(),
+        geoLocator = GeoLocatorController(),
         queue = SnapshotsQueue(),
         tracker = Tracker(),
         sender = Sender();
@@ -71,15 +71,12 @@ class AppController extends SimpleState<AppControllerState> {
 
     openIdClient = OpenIdClient(
       OpenIdApi(
-          refreshPath: Uri.parse(
-        'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token',
-      )),
-      postAuth: (tokens) {
-        if (tokens != null) {
-          _postLogin(tokens);
-        } else {
-          _postLogout();
-        }
+        refreshPath: Uri.parse(
+          'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token',
+        ),
+      ),
+      postLogin: (tokens) {
+        _postLogin(tokens);
         session.tokens = tokens;
         sessionStorage.saveSession(session);
       },
@@ -87,14 +84,18 @@ class AppController extends SimpleState<AppControllerState> {
         session.tokens = tokens;
         sessionStorage.saveSession(session);
       },
-    );
+      postLogout: () {
+        _postLogout();
+        sessionStorage.dropSession();
+      },
+    ); 
 
     api = ApiClient(openIdClient);
 
     session = await sessionStorage.restoreLast();
     Tokens? lastTokens = session.tokens;
     if (lastTokens != null) {
-      openIdClient.setTokens(lastTokens);
+      openIdClient.loginByTokens(lastTokens);
     }
     setState(() {
       state.isBooted = true;
@@ -103,7 +104,7 @@ class AppController extends SimpleState<AppControllerState> {
 
   login(String login, String password) async {
     try {
-      await openIdClient.login(email: login, password: password);
+      await openIdClient.loginByPassword(email: login, password: password);
     } on BadCredentialsException catch (e) {
       throw LoginFailedException(e.message);
     }
