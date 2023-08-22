@@ -88,14 +88,18 @@ class AppController extends SimpleState<AppControllerState> {
         _postLogout();
         sessionStorage.dropSession();
       },
-    ); 
+    );
 
     api = ApiClient(openIdClient);
 
     session = await sessionStorage.restoreLast();
     Tokens? lastTokens = session.tokens;
     if (lastTokens != null) {
-      openIdClient.loginByTokens(lastTokens);
+      try {
+        await openIdClient.loginByTokens(lastTokens);
+      } catch (e) {
+        logger.info('Tokens expired, re-logout ($e)');
+      }
     }
     setState(() {
       state.isBooted = true;
