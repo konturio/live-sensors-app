@@ -109,8 +109,8 @@ class OpenIdClient extends http.BaseClient {
     _postLogin(tokens);
   }
 
-  loginByTokens(Tokens t) {
-    tokens = t;
+  loginByTokens(Tokens t) async {
+    await _updateTokens(t.refreshToken);
     _postLogin(t);
   }
 
