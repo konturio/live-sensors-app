@@ -195,3 +195,6 @@ class _HomePageState extends State<HomePage> {
 
   ### Environment variables
   https://itnext.io/secure-your-flutter-project-the-right-way-to-set-environment-variables-with-compile-time-variables-67c3163ff9f4
+
+
+  https://github.com/Baseflow/flutter-geolocator/issues/1212
