@@ -1,8 +1,6 @@
-// https://github.com/konturio/disaster-ninja-fe/blob/bc3e362525ac939b8513ac4bcc9f80dc5df965dd/src/features/live_sensor/toSnapshotFormat.ts
 
-import 'package:turf/turf.dart';
-// import 'package:fk_user_agent/fk_user_agent.dart';
-import 'package:geolocator/geolocator.dart' as locator;
+import 'package:turf/turf.dart' as Turf;
+import 'package:live_sensors/geolocator/position.dart' as Locator;
 import 'package:nanoid/nanoid.dart';
 import './snapshot.dart';
 
@@ -18,8 +16,8 @@ class ConversionError extends Error {
   ConversionError(this.message);
 }
 
-Position toGeoJsonPosition(locator.Position pos) {
-  return Position(pos.longitude, pos.latitude, pos.altitude);
+Turf.Position toGeoJsonPosition(Locator.Position pos) {
+  return Turf.Position(pos.longitude, pos.latitude, pos.altitude);
 }
 
 precise(double val) {
@@ -31,14 +29,14 @@ preciseAll(List<double> list) {
 }
 
 const precision = 3;
-FeatureCollection snapshotToGeoJson(Snapshot snapshot) {
-  locator.Position? position = snapshot.position;
+Turf.FeatureCollection snapshotToGeoJson(Snapshot snapshot) {
+  Locator.Position? position = snapshot.position;
   if (position == null) {
     throw ConversionError('Missing coordinates in snapshot');
   }
-  Feature<Point> point = Feature<Point>(
+  Turf.Feature<Turf.Point> point = Turf.Feature<Turf.Point>(
     id: customNanoId(),
-    geometry: Point(coordinates: toGeoJsonPosition(position)),
+    geometry: Turf.Point(coordinates: toGeoJsonPosition(position)),
     properties: {
       'lng': precise(position.longitude),
       'lat': precise(position.latitude),
@@ -68,5 +66,5 @@ FeatureCollection snapshotToGeoJson(Snapshot snapshot) {
     },
   );
 
-  return FeatureCollection(features: [point]);
+  return Turf.FeatureCollection(features: [point]);
 }

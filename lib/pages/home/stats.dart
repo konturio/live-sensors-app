@@ -36,7 +36,7 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
     readVersion();
     Duration freq = widget.controller.tracker.positionFreq.updateStatsFrequency;
     Timer.periodic(freq, (timer) async {
-      geoLocatorStats = await widget.controller.geoLocator.getStats();
+      geoLocatorStats = await widget.controller.geoLocator.getAccuracy();
       if (mounted) {
         setState(() {
           positionUpdates =

@@ -10,7 +10,8 @@ import 'entities/tokens.dart';
 import 'sensors/sensors.dart';
 import 'entities/user.dart';
 import 'api/api_client.dart';
-import 'geo_locator/position.dart';
+import 'geolocator/geolocator.dart';
+import 'geolocator/base_flow_geolocator.dart';
 import 'queue/queue.dart';
 import 'storage/storage.dart';
 
@@ -37,7 +38,7 @@ class AppController extends SimpleState<AppControllerState> {
   final Logger logger = Logger();
   /* Store snapshots on hard drive */
   final Storage storage = Storage();
-  final GeoLocatorController geoLocator;
+  final GeoLocator geoLocator;
   final Sensors sensors;
 
   late AppConfig config;
@@ -53,7 +54,7 @@ class AppController extends SimpleState<AppControllerState> {
 
   AppController()
       : sensors = Sensors(),
-        geoLocator = GeoLocatorController(),
+        geoLocator = BaseFlowGeolocator(),
         queue = SnapshotsQueue(),
         tracker = Tracker(),
         sender = Sender();
@@ -128,22 +129,27 @@ class AppController extends SimpleState<AppControllerState> {
   }
 
   setup(User user) async {
-    sender.setup(
-      api: api,
-      storage: storage,
-      queue: queue,
-    );
+    try {
+      await geoLocator.requestPermissions();
+      sender.setup(
+        api: api,
+        storage: storage,
+        queue: queue,
+      );
 
-    await FkUserAgent.init();
-    String userAgent = FkUserAgent.userAgent ?? 'Unknown';
+      await FkUserAgent.init();
+      String userAgent = FkUserAgent.userAgent ?? 'Unknown';
 
-    tracker.setup(
-      user: user,
-      userAgent: userAgent,
-      queue: queue,
-      sensors: sensors.stream,
-      position: geoLocator.stream,
-    );
+      tracker.setup(
+        user: user,
+        userAgent: userAgent,
+        queue: queue,
+        sensors: sensors.stream,
+        position: geoLocator.getPositionStream(),
+      );
+    } catch (e) {
+       logger.error(e.toString());
+    }
   }
 
   logout() {
