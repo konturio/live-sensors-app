@@ -17,9 +17,9 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
   String snapshotsCount = 'Measuring...';
   String geoLocatorStats = '';
   String version = '';
+  Duration updateStatsFrequency = const Duration(seconds: 3);
 
   late AnimationController controller;
-  late Function _unsubscribe;
 
   @override
   initState() {
@@ -27,14 +27,14 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
       /// [AnimationController]s can be created with `vsync: this` because of
       /// [TickerProviderStateMixin].
       vsync: this,
-      duration: widget.controller.tracker.positionFreq.updateStatsFrequency,
+      duration: updateStatsFrequency,
     )..addListener(() {
         setState(() {});
       });
     controller.repeat();
     super.initState();
     readVersion();
-    Duration freq = widget.controller.tracker.positionFreq.updateStatsFrequency;
+    Duration freq = updateStatsFrequency;
     Timer.periodic(freq, (timer) async {
       geoLocatorStats = await widget.controller.geoLocator.getAccuracy();
       if (mounted) {

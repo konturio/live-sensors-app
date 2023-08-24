@@ -3,27 +3,25 @@ import 'package:statistics/statistics.dart';
 
 class CallPerSecMeasure {
   num _counter = 0;
-  num _histLength = 0;
+  num _maxHistLength = 0;
   final List<num> _history = <num>[];
-  late Duration updateStatsFrequency;
-  num mean = 0;
 
-  CallPerSecMeasure({ num? historyLength, Duration? updateStatsFrequency }) {
-    _histLength = historyLength ?? 20;
-    this.updateStatsFrequency = updateStatsFrequency ?? const Duration(seconds: 5);
+  CallPerSecMeasure({ num maxHistoryLength = 20 }) {
+    _maxHistLength = maxHistoryLength;
 
+    /// Remember how many ticks was during last second 
     Timer.periodic(const Duration(seconds: 1), (timer) {
       _add(_counter);
       _counter = 0;
     });
+  }
 
-    Timer.periodic(this.updateStatsFrequency, (timer) {
-      mean = _history.mean;
-    });
+  num get mean {
+   return _history.mean;
   }
 
   _add(record) {
-    if (_history.length > _histLength) {
+    if (_history.length > _maxHistLength) {
       _history.removeAt(0);
     }
     _history.add(record);
