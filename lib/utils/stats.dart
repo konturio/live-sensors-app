@@ -6,7 +6,7 @@ class CallPerSecMeasure {
   num _maxHistLength = 0;
   final List<num> _history = <num>[];
 
-  CallPerSecMeasure({ num maxHistoryLength = 20 }) {
+  CallPerSecMeasure({ num maxHistoryLength = 5 }) {
     _maxHistLength = maxHistoryLength;
 
     /// Remember how many ticks was during last second 

@@ -14,10 +14,13 @@ then
     read confirmation
     if [[ $confirmation == y* ]];
     then
-        git tag $new_version
-        git push --tags
+        
         ver_line=$(grep -n 'version:' pubspec.yaml | cut -d ':' -f1)
         sed -i "${ver_line}s/.*/version: ${new_version}/" pubspec.yaml
+        git add pubspec.yaml
+        git commit -m $new_version
+        git tag $new_version
+        git push --tags
         echo "Release created successfully"
         echo "Run build.sh script for deploy"
     else

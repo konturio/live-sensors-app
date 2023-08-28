@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:live_sensors/geolocator/position.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:live_sensors/controller.dart';
@@ -15,10 +16,11 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
   String sensorsUpdates = 'Measuring...';
   String positionUpdates = 'Measuring...';
   String snapshotsCount = 'Measuring...';
-  String geoLocatorStats = '';
+  String accuracySetting = '';
+  String accuracyActual = 'Measuring...';
   String version = '';
   Duration updateStatsFrequency = const Duration(seconds: 3);
-
+  StreamSubscription<Position>? positionStreamSubscription;
   late AnimationController controller;
 
   @override
@@ -35,8 +37,16 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
     super.initState();
     readVersion();
     Duration freq = updateStatsFrequency;
+    Stream<Position> positionStream =
+        widget.controller.geoLocator.getPositionStream();
+
+    positionStreamSubscription = positionStream.listen((event) {
+      if (mounted) {
+        accuracyActual = event.accuracy.toStringAsPrecision(4);
+      }
+    });
     Timer.periodic(freq, (timer) async {
-      geoLocatorStats = await widget.controller.geoLocator.getAccuracy();
+      accuracySetting = await widget.controller.geoLocator.getAccuracy();
       if (mounted) {
         setState(() {
           positionUpdates =
@@ -59,6 +69,7 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    positionStreamSubscription?.cancel();
     controller.dispose();
     super.dispose();
   }
@@ -77,9 +88,10 @@ class _StatsViewState extends State<StatsView> with TickerProviderStateMixin {
             const SizedBox(height: 8),
             Text(version),
             Text('Position updates: $positionUpdates'),
+            Text('Position accuracy: $accuracyActual ±m'),
+            Text('Position setting: $accuracySetting'),
             Text('Sensors updates: $sensorsUpdates'),
             Text('Snapshots sent: $snapshotsCount'),
-            Text(geoLocatorStats),
           ],
         ));
   }

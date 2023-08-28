@@ -81,8 +81,9 @@ class BaseFlowGeolocator implements GeoLocator {
         _locationSettings = BaseFlow.AndroidSettings(
             accuracy: BaseFlow.LocationAccuracy.best,
             // distanceFilter: 100,
-            // forceLocationManager: true,
             intervalDuration: const Duration(seconds: 1),
+            // avoid FusedLocationProviderClient
+            forceLocationManager: true,
             //(Optional) Set foreground notification config to keep the app alive
             //when going to the background
             foregroundNotificationConfig:
@@ -90,6 +91,7 @@ class BaseFlowGeolocator implements GeoLocator {
               notificationText: "App keep tracking user location in background",
               notificationTitle: "Live Sensors tracker",
               enableWakeLock: true,
+              enableWifiLock: true,
             ));
         break;
 
@@ -122,16 +124,17 @@ class BaseFlowGeolocator implements GeoLocator {
   Stream<Position> getPositionStream() {
     _connectToPositionStream();
     return _positionStream.map((event) => Position(
-        longitude: event.longitude,
-        latitude: event.latitude,
-        timestamp: event.timestamp,
-        accuracy: event.accuracy,
-        altitude: event.altitude,
-        heading: event.heading,
-        speed: event.speed,
-        speedAccuracy: event.speedAccuracy,
-        floor: event.floor,
-        isMocked: event.isMocked));
+          longitude: event.longitude,
+          latitude: event.latitude,
+          timestamp: event.timestamp,
+          accuracy: event.accuracy,
+          altitude: event.altitude,
+          heading: event.heading,
+          speed: event.speed,
+          speedAccuracy: event.speedAccuracy,
+          floor: event.floor,
+          isMocked: event.isMocked,
+        ));
   }
 
   @override
