@@ -2,15 +2,7 @@
 // https://github.com/lucashilles/flutter-dev-container
 {
   "name": "Flutter",
-  "runArgs": ["--userns=keep-id"],
-  "containerUser": "vscode",
-  "remoteUser": "vscode",
-  "updateRemoteUserUID": true,
-  "containerEnv": {
-    "HOME": "/home/vscode"
-  },
   "dockerFile": "Dockerfile",
-
   "customizations": {
     "vscode": {
       // Set *default* container specific settings.json values on container create.
@@ -21,11 +13,4 @@
       "extensions": ["dart-code.dart-code", "dart-code.flutter"]
     }
   }
-
-  // This command create an example project after the container is created.
-  // "postCreateCommand": "flutter create test_project"
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  //"forwardPorts": [],
-  // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-  // "remoteUser": "vscode"
 }
