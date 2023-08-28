@@ -41,7 +41,7 @@ Future<BaseFlow.Position> requestLocationPermission() async {
   // When we reach here, permissions are granted and we can
   // continue accessing the position of the device.
   return await BaseFlow.Geolocator.getCurrentPosition(
-    desiredAccuracy: BaseFlow.LocationAccuracy.best,
+    desiredAccuracy: BaseFlow.LocationAccuracy.gpsOnly,
   );
 }
 

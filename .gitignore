@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/release
 .env*
 !.env.example.json
+android/app/local.properties
+
+*/.vscode/settings.json
