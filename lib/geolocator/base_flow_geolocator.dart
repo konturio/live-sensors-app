@@ -79,7 +79,7 @@ class BaseFlowGeolocator implements GeoLocator {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         _locationSettings = BaseFlow.AndroidSettings(
-            accuracy: BaseFlow.LocationAccuracy.best,
+            accuracy: BaseFlow.LocationAccuracy.gpsOnly,
             // distanceFilter: 100,
             intervalDuration: const Duration(seconds: 1),
             // avoid FusedLocationProviderClient

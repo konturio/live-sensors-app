@@ -1,0 +1,16 @@
+{
+  "packages": [],
+  "shell": {
+    "scripts": {
+      "build": [
+        "./scripts/build.sh"
+      ],
+      "deploy_latest": [
+        "./scripts/upload.sh"
+      ],
+      "release": [
+        "./scripts/release.sh"
+      ]
+    }
+  }
+}
