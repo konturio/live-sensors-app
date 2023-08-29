@@ -205,7 +205,7 @@ packages:
     description:
       path: geolocator
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "10.0.0"
@@ -214,7 +214,7 @@ packages:
     description:
       path: geolocator_android
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "4.2.3"
@@ -223,7 +223,7 @@ packages:
     description:
       path: geolocator_apple
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "2.2.7"
@@ -232,7 +232,7 @@ packages:
     description:
       path: geolocator_platform_interface
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "4.0.7"
@@ -241,7 +241,7 @@ packages:
     description:
       path: geolocator_web
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "2.1.7"
@@ -250,7 +250,7 @@ packages:
     description:
       path: geolocator_windows
       ref: HEAD
-      resolved-ref: b638a5ede18897cf917a9f3804b68c9706aedcac
+      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
       url: "https://github.com/konturio/flutter-geolocator/"
     source: git
     version: "0.2.0"
