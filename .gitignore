@@ -49,5 +49,6 @@ app.*.map.json
 .env*
 !.env.example.json
 android/app/local.properties
-/releases
+/releases/*
+!/releases/.gitkeep
 
