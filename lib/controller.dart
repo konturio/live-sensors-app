@@ -15,7 +15,6 @@ import 'geolocator/base_flow_geolocator.dart';
 import 'queue/queue.dart';
 import 'storage/storage.dart';
 
-import 'config.dart';
 import 'sender.dart';
 import 'tracker.dart';
 
@@ -41,7 +40,6 @@ class AppController extends SimpleState<AppControllerState> {
   final GeoLocator geoLocator;
   final Sensors sensors;
 
-  late AppConfig config;
   late ApiClient api;
   late OpenIdClient openIdClient;
 
@@ -68,7 +66,6 @@ class AppController extends SimpleState<AppControllerState> {
   init() async {
     SessionStorage sessionStorage = SessionStorage();
     Session session = Session();
-    config = AppConfig().read();
 
     openIdClient = OpenIdClient(
       OpenIdApi(
@@ -148,7 +145,7 @@ class AppController extends SimpleState<AppControllerState> {
         position: geoLocator.getPositionStream(),
       );
     } catch (e) {
-       logger.error(e.toString());
+      logger.error(e.toString());
     }
   }
 

@@ -4,50 +4,14 @@ Development
 ----
 For run application in dev mode
 ```
-flutter run --dart-define-from-fil=.env.json
-```
-
-If you not have .env.json file create one be example (.env.example.json)
-
-In case you are use VSCode for development, there recommended launch.json config:
-```
-{
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "live_sensors",
-      "request": "launch",
-      "type": "dart",
-      "toolArgs": ["--dart-define-from-file", ".env.json"]
-    },
-    {
-      "name": "live_sensors (profile mode)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile",
-      "toolArgs": ["--dart-define-from-file", ".env.json"]
-    },
-    {
-      "name": "live_sensors (release mode)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release",
-      "toolArgs": ["--dart-define-from-file", ".env.json"]
-    }
-  ]
-}
-
+flutter run
 ```
 
 Build
 ----
 ```
-flutter build apk --dart-define-from-file=.env.json
+flutter build apk 
 ```
-
 
 
 ## Useful links
