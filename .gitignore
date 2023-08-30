@@ -20,6 +20,8 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
+*/.vscode/settings.json
+.vscode/settings.json
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -42,8 +44,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Other
 .env*
 !.env.example.json
 android/app/local.properties
+/releases
 
-*/.vscode/settings.json
