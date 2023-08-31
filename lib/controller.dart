@@ -64,6 +64,7 @@ class AppController extends SimpleState<AppControllerState> {
 
   // Create common application structure
   init() async {
+    await logger.init();
     SessionStorage sessionStorage = SessionStorage();
     Session session = Session();
 

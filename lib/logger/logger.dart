@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_logs/flutter_logs.dart';
 
 enum LogType { info, error, warning }
 
@@ -35,12 +36,57 @@ class LogRecord {
 class Logger {
   // 10_000 must be enough for write logs 8 hours every 3 second
   int maxRecords = 10000;
+  final tag = 'live_sensors';
 
   // Singleton
   static final Logger _singleton = Logger._internal();
   factory Logger() => _singleton;
-  Logger._internal() {
-    info('Logger started');
+  Logger._internal();
+
+  init() async {
+    //Initialize Logging
+    // await FlutterLogs.initLogs(
+    //   logLevelsEnabled: [
+    //     LogLevel.INFO,
+    //     LogLevel.WARNING,
+    //     LogLevel.ERROR,
+    //     LogLevel.SEVERE
+    //   ],
+    //   timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
+    //   directoryStructure: DirectoryStructure.FOR_DATE,
+    //   logTypesEnabled: ["device", "network", "errors"],
+    //   logFileExtension: LogFileExtension.LOG,
+    //   logsWriteDirectoryName: "MyLogs",
+    //   logsExportDirectoryName: "MyLogs/Exported",
+    //   debugFileOperations: true,
+    //   isDebuggable: true,
+    // );
+    await FlutterLogs.initMQTT(
+      writeLogsToLocalStorage: false,
+      topic: "live-sensor-app",
+      brokerUrl: "zigzag.kontur.io", // Add URL without schema
+      // certificate: "m2mqtt_ca.crt",
+      port: "1883",
+    );
+    await FlutterLogs.setMetaInfo(
+      appId: "flutter_logs_example",
+      appName: "Flutter Logs Demo",
+      appVersion: "1.0",
+      // language: "",
+      // deviceId: "",
+      // environmentId: "",
+      // environmentName: "",
+      // organizationId: "",
+      // userId: tokens.sessionId
+      // userName: "",
+      // userEmail: "",
+      // deviceSerial: "",
+      // deviceBrand: "",
+      // deviceName: "",
+      // deviceManufacturer: "",
+      // deviceModel: "",
+      // deviceSdkInt: "",
+    );
   }
 
   final List<LogRecord> _records = <LogRecord>[];
@@ -60,15 +106,18 @@ class Logger {
     }
   }
 
-  info(String msg) {
+  info(String msg, [String subTag = 'default']) {
+    FlutterLogs.logInfo(tag, subTag, msg);
     _add(LogRecord(LogType.info, msg));
   }
 
-  warn(String msg) {
+  warn(String msg, [String subTag = 'default']) {
+    FlutterLogs.logWarn(tag, subTag, msg);
     _add(LogRecord(LogType.warning, msg));
   }
 
-  error(String msg) {
+  error(String msg, [String subTag = 'default']) {
+    FlutterLogs.logError(tag, subTag, msg);
     _add(LogRecord(LogType.error, msg));
   }
 
