@@ -1,4 +1,17 @@
 {
   "lockfile_version": "1",
-  "packages": {}
+  "packages": {
+    "flutter@latest": {
+      "last_modified": "2023-04-21T20:43:26Z",
+      "resolved": "github:NixOS/nixpkgs/2362848adf8def2866fabbffc50462e929d7fffb#flutter",
+      "source": "devbox-search",
+      "version": "3.3.8"
+    },
+    "openjdk17@latest": {
+      "last_modified": "2023-02-24T18:08:35Z",
+      "resolved": "github:NixOS/nixpkgs/806075be2bdde71895359ed18cb530c4d323e6f6#openjdk17",
+      "source": "devbox-search",
+      "version": "17.0.5+8"
+    }
+  }
 }

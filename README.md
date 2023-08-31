@@ -14,7 +14,11 @@ Another options is using [devbox](https://github.com/jetpack-io/devbox) tool for
 ```
 devbox install
 ```
-```
+
+
+### Scripts
+Repository have set of scripts that helps build, test, and release app.
+
 
 Build
 ----
@@ -22,136 +26,45 @@ Build
 flutter build apk 
 ```
 
-
 ## Useful links
 - [Remote debugging on real device](https://dev.to/petrussola/how-to-debug-flutter-app-with-real-android-phone-693)
+- [Use a native language debugger](https://docs.flutter.dev/testing/native-debugging)
 
 
-Auto scrolling
-```
-class _HomePageState extends State<HomePage> {
-  ScrollController scrollController = ScrollController(); // 👈 Define scrollController 
-  List<String> assets = [...] // String of images to be displayed in listview
-
-  @override
-  void initState() { // 👈 create animation in initState
-    Future.delayed(const Duration(seconds: 1), () {
-      scrollController.animateTo(scrollController.position.maxScrollExtent,
-          duration: Duration(seconds: asset.length * 10), curve: Curves.linear);
-    });
-
-   //👉 If you want infinite scrolling use the following code 
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        // Scroll has reached the end, reset the position to the beginning.
-        scrollController.jumpTo(scrollController.position.minScrollExtent);
-      }
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
-  }
-
-@override
-  Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: SizedBox(
-        width: size.width,
-        height: size.height,
-        child: ListView.builder(
-                  controller: scrollController, // 👈 assign scrollController here
-                  ....
-                  // display your images here
-               ),
-             ),
-       );
-  }
-```   
-
-```
 ## Architecture
+All top level logic described in `/main/controller.dart` module
 
-  ╭ SnapshotError
-  │  temporaryError
-  │  type: Network | Backend | Device | Unknown
-  │  message
-  ╰
+### Initialization stage
+When app booted in try to recover previous user sessions.
+In case if success app goes to `setup` stage, else user redirected to login screen,
+and `setup` stage will executed after successful login 
 
-  ╭ Snapshot
-  │  SnapshotError
-  │  position
-  │  startDateTime
-  │  endDateTime
-  │  measurements
-  │  user
-  │  addMeasurement:
-  │  seal(Position):
-  │  attachError:
-  ╰
+### Setup stage
+During the installation process, the program requests the necessary accesses, instantiates the services
 
-  ╭ Tracker
-  │  Snapshot ──┬┬┬──┬──→ Sender.addToQueue
-  │  Sensors:   │││  │
-  │    Sensor_A ┘││  │
-  │    Sensor_B ─┘│  │
-  │    Sensor_N ──┘  │
-  │  GeoPosition ────┘ 
-  ╰
+### Http client
 
-  ╭ Sender
-  │  Queue
-  │  Storage
-  │   
-  │  init:
-  │    sendSnapshotsFromQueue()
-  │    sendSnapshotsFromStorage()
-  │
-  │  addToQueue:
-  │    Snapshot -> Queue.add
-  │
-  │  sendSnapshotsFromQueue:
-  │    while(true):
-  │      Queue.next
-  │         Api.send
-  │          then:
-  │            Queue.remove(Snapshot)
-  │          catch(e):
-  │            Snapshot.attachError(e)
-  │            Storage.save(Snapshot)
-  │            Queue.skip(Snapshot)
-  │
-  │  sendSnapshotsFromStorage:
-  │    while(true):
-  │      Storage.next
-  │         Api.send
-  │          then:
-  │            Storage.delete(Snapshot)
-  ╰
+- ApiClient - describe backend api
+  - OpenIdClient - handle auth logic - login / logout / handle 401 errors / keep tokens fresh
+    -  OpenIdApi - describe auth api
 
-  ╭ Queue
-  │  _queue
-  │  add:
-  │  remove:
-  │  skip:
-  │  persist:
-  │  next: 
-  ╰ 
+### Snapshot
 
-  ╭ Storage
-  │  save:
-  │  delete:
-  │  next: // Cycled over file, but on second cycle takes only snapshots with 
-  ╰ 
+Contain all sensors records during period of time
 
 
-  ### Environment variables
-  https://itnext.io/secure-your-flutter-project-the-right-way-to-set-environment-variables-with-compile-time-variables-67c3163ff9f4
+### Tracker 
+
+- Listens to sensors and fills snapshots with sensor data
+- listens to gps channel and create new snapshot on every position change
+- Adding new snapshots to `queue`
+
+### Sender
+
+Sending snapshots from `queue` to backend
 
 
-  https://github.com/Baseflow/flutter-geolocator/issues/1212
+### Dataflow
+```
+Sensors + GPS ---(data)--> Tracker ---(Snapshot)--> Queue --> Sender --> Client --> Backend
+```
