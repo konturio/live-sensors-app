@@ -41,7 +41,7 @@ Future<BaseFlow.Position> requestLocationPermission() async {
   // When we reach here, permissions are granted and we can
   // continue accessing the position of the device.
   return await BaseFlow.Geolocator.getCurrentPosition(
-    desiredAccuracy: BaseFlow.LocationAccuracy.gpsOnly,
+    desiredAccuracy: BaseFlow.LocationAccuracy.best,
   );
 }
 
@@ -79,7 +79,7 @@ class BaseFlowGeolocator implements GeoLocator {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         _locationSettings = BaseFlow.AndroidSettings(
-            accuracy: BaseFlow.LocationAccuracy.gpsOnly,
+            accuracy: BaseFlow.LocationAccuracy.best,
             // distanceFilter: 100,
             intervalDuration: const Duration(seconds: 1),
             // avoid FusedLocationProviderClient

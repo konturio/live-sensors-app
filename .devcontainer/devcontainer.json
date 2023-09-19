@@ -3,6 +3,10 @@
 {
   "name": "Flutter",
   "dockerFile": "Dockerfile",
+  "runArgs": ["--userns=keep-id"],
+  "containerUser": "vscode",
+  // "remoteUser": "vscode",
+  // "updateRemoteUserUID": true,
   "customizations": {
     "vscode": {
       // Set *default* container specific settings.json values on container create.

@@ -137,11 +137,12 @@ packages:
   flutter_logs:
     dependency: "direct main"
     description:
-      name: flutter_logs
-      sha256: dd037783f0f22fe03f359b65f913af275aeac4a1474c18c41b2ed9fdbd4f83f1
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.10"
+      path: "."
+      ref: HEAD
+      resolved-ref: d38f6d5edbae879d39e8aea621fdc56cf6999794
+      url: "https://github.com/konturio/flutter_logs/"
+    source: git
+    version: "2.1.11"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -211,56 +212,50 @@ packages:
   geolocator:
     dependency: "direct main"
     description:
-      path: geolocator
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
-    version: "10.0.0"
+      name: geolocator
+      sha256: "9f1c9a70dd25fc9d9574ff17ba714cf3bc7894258efd7d1ce0debfafe2f8e1d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.1"
   geolocator_android:
     dependency: transitive
     description:
-      path: geolocator_android
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
-    version: "4.2.3"
+      name: geolocator_android
+      sha256: db75aacf93fcdc2c0ba20066019da30e3fde7b102cf579d4bd4ea542e8a8cf17
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.4"
   geolocator_apple:
     dependency: transitive
     description:
-      path: geolocator_apple
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
+      name: geolocator_apple
+      sha256: "36527c555f4c425f7d8fa8c7c07d67b78e3ff7590d40448051959e1860c1cfb4"
+      url: "https://pub.dev"
+    source: hosted
     version: "2.2.7"
   geolocator_platform_interface:
     dependency: transitive
     description:
-      path: geolocator_platform_interface
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
-    version: "4.0.7"
+      name: geolocator_platform_interface
+      sha256: b2a0c09d2cfe8ad6a8cc44fada5c1092c49286e8c30922914dfe2b23799a682f
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.8"
   geolocator_web:
     dependency: transitive
     description:
-      path: geolocator_web
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
-    version: "2.1.7"
+      name: geolocator_web
+      sha256: f68a122da48fcfff68bbc9846bb0b74ef651afe84a1b1f6ec20939de4d6860e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.6"
   geolocator_windows:
     dependency: transitive
     description:
-      path: geolocator_windows
-      ref: HEAD
-      resolved-ref: "3b8869c9371e8842c147797ad4b290a4ff9128a4"
-      url: "https://github.com/konturio/flutter-geolocator/"
-    source: git
+      name: geolocator_windows
+      sha256: "463045515b08bd83f73e014359c4ad063b902eb3899952cfb784497ae6c6583b"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.2.0"
   http:
     dependency: "direct main"

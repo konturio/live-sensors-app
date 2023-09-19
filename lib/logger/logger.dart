@@ -45,48 +45,49 @@ class Logger {
 
   init() async {
     //Initialize Logging
-    // await FlutterLogs.initLogs(
-    //   logLevelsEnabled: [
-    //     LogLevel.INFO,
-    //     LogLevel.WARNING,
-    //     LogLevel.ERROR,
-    //     LogLevel.SEVERE
-    //   ],
-    //   timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
-    //   directoryStructure: DirectoryStructure.FOR_DATE,
-    //   logTypesEnabled: ["device", "network", "errors"],
-    //   logFileExtension: LogFileExtension.LOG,
-    //   logsWriteDirectoryName: "MyLogs",
-    //   logsExportDirectoryName: "MyLogs/Exported",
-    //   debugFileOperations: true,
-    //   isDebuggable: true,
+    await FlutterLogs.initLogs(
+      logLevelsEnabled: [
+        LogLevel.INFO,
+        LogLevel.WARNING,
+        LogLevel.ERROR,
+        LogLevel.SEVERE
+      ],
+      timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
+      directoryStructure: DirectoryStructure.FOR_DATE,
+      logTypesEnabled: ["device", "network", "errors"],
+      logFileExtension: LogFileExtension.LOG,
+      logsWriteDirectoryName: "MyLogs",
+      logsExportDirectoryName: "MyLogs/Exported",
+      debugFileOperations: true,
+      isDebuggable: true,
+    );
+    // await FlutterLogs.initMQTT(
+    //   writeLogsToLocalStorage: false,
+    //   topic: "live-sensor-app",
+    //   brokerUrl: "zigzag.kontur.io", // Add URL without schema
+    //   certificate: "client.crt",
+    //   port: "8883",
     // );
-    await FlutterLogs.initMQTT(
-      writeLogsToLocalStorage: false,
-      topic: "live-sensor-app",
-      brokerUrl: "zigzag.kontur.io", // Add URL without schema
-      // certificate: "m2mqtt_ca.crt",
-      port: "1883",
-    );
-    await FlutterLogs.setMetaInfo(
-      appId: "flutter_logs_example",
-      appName: "Flutter Logs Demo",
-      appVersion: "1.0",
-      // language: "",
-      // deviceId: "",
-      // environmentId: "",
-      // environmentName: "",
-      // organizationId: "",
-      // userId: tokens.sessionId
-      // userName: "",
-      // userEmail: "",
-      // deviceSerial: "",
-      // deviceBrand: "",
-      // deviceName: "",
-      // deviceManufacturer: "",
-      // deviceModel: "",
-      // deviceSdkInt: "",
-    );
+
+    // await FlutterLogs.setMetaInfo(
+    //   appId: "flutter_logs_example",
+    //   appName: "Flutter Logs Demo",
+    //   appVersion: "1.0",
+    // language: "",
+    // deviceId: "",
+    // environmentId: "",
+    // environmentName: "",
+    // organizationId: "",
+    // userId: tokens.sessionId
+    // userName: "",
+    // userEmail: "",
+    // deviceSerial: "",
+    // deviceBrand: "",
+    // deviceName: "",
+    // deviceManufacturer: "",
+    // deviceModel: "",
+    // deviceSdkInt: "",
+    // );
   }
 
   final List<LogRecord> _records = <LogRecord>[];

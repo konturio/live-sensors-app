@@ -6,7 +6,8 @@ Development
 ### Dev container 
 This project have config for [vscode dev container](https://code.visualstudio.com/docs/devcontainers/containers)
 So in case you open project in vscode and you have docker installed in system - you just run command `Dev containers: reopen in dev container` command to get all dev environment
-> Note: Podman not supported
+> Note: If you use podman an additional configuration may required
+> https://jahed.dev/2023/05/27/remote-development-with-vs-code-podman/
 
 
 ### Devbox 
