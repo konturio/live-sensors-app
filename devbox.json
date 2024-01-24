@@ -5,14 +5,14 @@
   ],
   "shell": {
     "scripts": {
-      "build": [
-        "./scripts/build.sh"
-      ],
-      "deploy_latest": [
-        "./scripts/upload.sh"
-      ],
-      "release": [
-        "./scripts/release.sh"
+      "install": "flutter pub get",
+      "build": "./scripts/build.sh",
+      "deploy_latest": "./scripts/upload.sh",
+      "release": "./scripts/release.sh",
+      "dev": "dart run build_runner watch --delete-conflicting-outputs",
+      "clean": [
+        "flutter pub cache clean",
+        "flutter clean"
       ]
     }
   }

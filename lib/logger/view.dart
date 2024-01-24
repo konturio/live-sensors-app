@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:live_sensors/logger/log_message.dart';
 import 'package:live_sensors/logger/logger.dart';
 
 class LoggerView extends StatefulWidget {
@@ -10,7 +11,7 @@ class LoggerView extends StatefulWidget {
 }
 
 class _LoggerViewState extends State<LoggerView> {
-  List<LogRecord> _records = <LogRecord>[];
+  List<LogMessage> _records = <LogMessage>[];
   late Function _unsubscribe;
 
   @override
@@ -36,8 +37,8 @@ class _LoggerViewState extends State<LoggerView> {
           .map(
             (log) => Card(
               child: ListTile(
-                title: Text(log.msg),
-                subtitle: Text(log.time),
+                title: Text(log.message),
+                subtitle: Text(log.level.toString()),
               ),
             ),
           )
