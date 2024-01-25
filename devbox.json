@@ -1,8 +1,11 @@
 {
-  "packages": [
-    "flutter@latest",
-    "openjdk17@latest"
-  ],
+  "packages": {
+    "flutter": {
+      "version":            "latest",
+      "excluded_platforms": ["aarch64-darwin"]
+    },
+    "openjdk17": "latest"
+  },
   "shell": {
     "scripts": {
       "install": "flutter pub get",
