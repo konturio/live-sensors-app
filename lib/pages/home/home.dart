@@ -15,7 +15,7 @@ class HomePage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Live sensors'),
+          title: const Text('MylesVision'),
           actions: [
             IconButton(
               icon: const Icon(

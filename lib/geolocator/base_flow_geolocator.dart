@@ -89,7 +89,7 @@ class BaseFlowGeolocator implements GeoLocator {
             foregroundNotificationConfig:
                 const BaseFlow.ForegroundNotificationConfig(
               notificationText: "App keep tracking user location in background",
-              notificationTitle: "Live Sensors tracker",
+              notificationTitle: "MylesVision tracker",
               enableWakeLock: true,
               enableWifiLock: true,
             ));
