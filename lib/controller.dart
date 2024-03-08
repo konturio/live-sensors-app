@@ -71,7 +71,7 @@ class AppController extends SimpleState<AppControllerState> {
     openIdClient = OpenIdClient(
       OpenIdApi(
         refreshPath: Uri.parse(
-          'https://keycloak01.kontur.io/auth/realms/kontur/protocol/openid-connect/token',
+          'https://keycloak01.kontur.io/realms/kontur/protocol/openid-connect/token',
         ),
       ),
       postLogin: (tokens) {
