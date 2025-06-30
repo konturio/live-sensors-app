@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:async/async.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:live_sensors/logger/logger.dart';
 
@@ -18,18 +17,36 @@ class SensorEvent<T> {
 
 class Sensors {
   final Logger logger = Logger();
-  final List<Stream> _sensors = <Stream>[
-    userAccelerometerEvents.map((event) => SensorEvent(event, DateTime.now())),
-    gyroscopeEvents.map((event) => SensorEvent(event, DateTime.now())),
-    magnetometerEvents.map((event) => SensorEvent(event, DateTime.now()))
-  ];
   late Stream<SensorsData> stream;
 
   Sensors() {
-    stream = StreamZip(_sensors).map((List event) => (
-          event[0],
-          event[1],
-          event[2],
-        ));
+    final controller = StreamController<SensorsData>.broadcast();
+
+    SensorEvent<UserAccelerometerEvent>? accel;
+    SensorEvent<GyroscopeEvent>? gyro;
+    SensorEvent<MagnetometerEvent>? magnet;
+
+    void emit() {
+      if (accel != null && gyro != null && magnet != null) {
+        controller.add((accel!, gyro!, magnet!));
+      }
+    }
+
+    userAccelerometerEvents.listen((event) {
+      accel = SensorEvent(event, DateTime.now());
+      emit();
+    });
+
+    gyroscopeEvents.listen((event) {
+      gyro = SensorEvent(event, DateTime.now());
+      emit();
+    });
+
+    magnetometerEvents.listen((event) {
+      magnet = SensorEvent(event, DateTime.now());
+      emit();
+    });
+
+    stream = controller.stream;
   }
 }
